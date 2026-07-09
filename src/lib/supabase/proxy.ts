@@ -36,8 +36,11 @@ export async function updateSession(request: NextRequest) {
     return response
   }
 
-  // Unauthenticated: redirect to the logon screen with original path preserved.
-  const loginUrl = new URL('/win7', request.url)
+  // Unauthenticated: redirect to the logon screen (app root) with original path
+  // preserved. Clone nextUrl (not `new URL(..., request.url)`) so the configured
+  // basePath is retained — Next re-applies it, sending the user to /desktop.
+  const loginUrl = request.nextUrl.clone()
+  loginUrl.pathname = '/'
   loginUrl.searchParams.set('from', request.nextUrl.pathname)
   return NextResponse.redirect(loginUrl)
 }

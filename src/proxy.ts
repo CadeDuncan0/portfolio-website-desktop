@@ -6,5 +6,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/win7/desktop/:path*'],
+  matcher: ['/desktop/:path*'],
 }
