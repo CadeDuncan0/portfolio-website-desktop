@@ -1,22 +1,22 @@
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
-import type { ReactNode } from 'react'
+import type { Metadata } from 'next'
+import type { CSSProperties, ReactNode } from 'react'
 
-import ApolloProviderWrapper from '@/components/providers/ApolloProvider'
 import ReduxProviderWrapper from '@/components/providers/ReduxProvider'
+import { cssAssetVars } from '@/lib/assetPaths'
 
-import '7.css'
+// globals.css imports 7.css into a low cascade layer (see globals.css header)
 import './globals.css'
+
+export const metadata: Metadata = {
+  title: 'Cade Duncan — Desktop',
+  description: 'A Windows 7 desktop portfolio built with React and Next.js.',
+}
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" style={cssAssetVars() as CSSProperties}>
       <body>
-        <ReduxProviderWrapper>
-          <ApolloProviderWrapper>{children}</ApolloProviderWrapper>
-        </ReduxProviderWrapper>
-        <Analytics />
-        <SpeedInsights />
+        <ReduxProviderWrapper>{children}</ReduxProviderWrapper>
       </body>
     </html>
   )
