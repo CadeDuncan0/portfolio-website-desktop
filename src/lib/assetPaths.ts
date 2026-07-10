@@ -46,10 +46,10 @@ export const assetPaths = {
 } as const
 
 /**
- * Subpath the app is mounted under (e.g. `/desktop` — this project is served at
- * cadeduncan.com/desktop via a Vercel rewrite zone in the portfolio-website
- * repo). Kept in sync with `basePath` in `next.config.ts`; both derive from the
- * same value. Empty for a standalone deployment at the domain root.
+ * Optional subpath the app is mounted under (e.g. `/desktop` when served at
+ * cadeduncan.com/desktop via a Vercel rewrite zone). Empty for a standalone
+ * deployment at the domain root. Kept in sync with `basePath` in
+ * `next.config.ts` — both derive from the same env var.
  */
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
 
@@ -60,10 +60,10 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
  * automatically, but absolute paths inside CSS `url()` are emitted verbatim —
  * so under a subpath mount they resolve against the domain root and 404. The
  * root layout spreads these onto `<html>` as inline styles, which override the
- * `:root` fallbacks in `globals.css` (those stay correct at the root and for
+ * `:root` fallbacks in `globals.css` (those remain correct at the root and for
  * Storybook, where `BASE_PATH` is empty and the values are identical).
  *
- * Keys must match the hand-authored `url(...)` variables in `globals.css`.
+ * The keys must match the hand-authored `url(...)` variables in `globals.css`.
  */
 export function cssAssetVars(): Record<string, string> {
   return {
