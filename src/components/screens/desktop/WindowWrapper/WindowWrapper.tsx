@@ -5,18 +5,22 @@
  *  stateless 7.css <Window> primitive inside a positioned shell. */
 
 import { motion } from 'framer-motion'
-import { type CSSProperties, type ReactNode, useRef } from 'react'
+import { type CSSProperties, type ReactNode, useEffect, useRef } from 'react'
 
 import styles from './WindowWrapper.module.css'
 import { Window } from '@/components/windows7/Window'
 import { useWindowDrag } from '@/hooks/useWindowDrag'
 import { useWindowResize } from '@/hooks/useWindowResize'
 import { TASKBAR_RESERVE } from '@/lib/gridMath'
+import { clampWindowPosition, clampWindowSize } from '@/lib/windowMath'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
   closeWindow,
   focusWindow,
   minimizeWindow,
+  MIN_WINDOW_SIZE,
+  moveWindow,
+  resizeWindow,
   selectTopWindowId,
   selectWindowById,
   toggleMaximize,
@@ -59,6 +63,29 @@ export function WindowWrapper({
     size: windowData?.size ?? { width: 0, height: 0 },
     isMaximized: windowData?.isMaximized ?? false,
   })
+
+  // Re-clamp committed geometry to the current viewport. Remembered geometry
+  // (positionByKind, persisted sizeByKind, prevGeometry restores) may predate
+  // a viewport shrink, which would strand the title bar or resize handle
+  // off-screen with no pointer path to recover them. Gesture-committed values
+  // are already clamped, so re-runs are no-ops and cannot loop.
+  useEffect(() => {
+    if (!windowData || windowData.isMaximized) {
+      return
+    }
+    const viewport = {
+      width: window.innerWidth,
+      height: window.innerHeight - TASKBAR_RESERVE,
+    }
+    const size = clampWindowSize(windowData.size, { x: 0, y: 0 }, viewport, MIN_WINDOW_SIZE)
+    const position = clampWindowPosition(windowData.position, size, viewport)
+    if (size.width !== windowData.size.width || size.height !== windowData.size.height) {
+      dispatch(resizeWindow({ id: windowId, width: size.width, height: size.height }))
+    }
+    if (position.x !== windowData.position.x || position.y !== windowData.position.y) {
+      dispatch(moveWindow({ id: windowId, x: position.x, y: position.y }))
+    }
+  }, [dispatch, windowId, windowData])
 
   if (!windowData) {
     return null
