@@ -31,6 +31,22 @@ export const assetPaths = {
     windowsExplorer: `${ASSETS}/desktop-icons/windows-explorer.ico`,
     folderNested: `${ASSETS}/desktop-icons/folder-nested.ico`,
     folderWithDocuments: `${ASSETS}/desktop-icons/folder-with-documents.ico`,
+    resume: `${ASSETS}/desktop-icons/original-win7-icons/90.ico`,
+    projects: `${ASSETS}/desktop-icons/original-win7-icons/130.ico`,
+    superMarioBros: `${ASSETS}/desktop-icons/super-mario-bros.png`,
+  },
+  /** Portfolio documents served from public/documents. */
+  documents: {
+    resume: '/documents/Cade-Duncan-Resume.pdf',
+  },
+  /** Self-hosted playable game builds (Godot HTML5 exports under public/). */
+  games: {
+    superMarioBros: '/mario/index.html',
+  },
+  /** Project screenshots shown on the IE /projects pages. */
+  projects: {
+    win7WebOs: `${ASSETS}/projects/win7-web-os.png`,
+    superMarioBros: `${ASSETS}/projects/super-mario-bros.png`,
   },
   /** Start orb. Mirrored by hand in globals.css `--tb-orb-img`. */
   taskbar: {
@@ -72,4 +88,15 @@ export function cssAssetVars(): Record<string, string> {
     '--avatar-frame': `url('${BASE_PATH}${assetPaths.accountIcons.border}')`,
     '--tb-orb-img': `url('${BASE_PATH}${assetPaths.taskbar.startOrb}')`,
   }
+}
+
+/**
+ * Prefixes a root-absolute `public/` path with the configured BASE_PATH.
+ * Required for plain <img>/<iframe> srcs, anchor hrefs, and fetch() URLs —
+ * unlike router navigations and next/image, raw element URLs are not
+ * basePath-aware and would resolve against the domain root under a subpath
+ * mount.
+ */
+export function withBasePath(path: string): string {
+  return `${BASE_PATH}${path}`
 }

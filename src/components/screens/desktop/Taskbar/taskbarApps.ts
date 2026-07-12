@@ -26,6 +26,10 @@ const KIND_META: Record<WindowKind, TaskbarAppMeta> = {
     icon: assetPaths.desktopIcons.folderWithDocuments,
     label: 'Welcome',
   },
+  mario: {
+    icon: assetPaths.desktopIcons.superMarioBros,
+    label: 'Super Mario Bros.',
+  },
 }
 
 export function taskbarAppMeta(kind: WindowKind): TaskbarAppMeta {

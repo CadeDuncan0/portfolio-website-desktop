@@ -1,0 +1,40 @@
+.resumePage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--ie-content-bg);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--ie-external-card-border);
+}
+
+.title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 13pt;
+  color: var(--ie-favbar-link-color);
+}
+
+.download {
+  font-size: var(--ie-pagelinks-font-size);
+  color: var(--ie-pagelinks-link-color);
+  text-decoration: underline;
+  border-radius: var(--ie-favbar-link-radius);
+  padding: var(--space-1) var(--space-2);
+}
+
+.download:hover {
+  color: var(--ie-pagelinks-link-hover-color);
+  background: var(--ie-favbar-link-hover-bg);
+}
+
+/* The browser's own PDF viewer fills the remaining window height. */
+.viewer {
+  flex: 1;
+  width: 100%;
+  border: 0;
+}

@@ -1,3 +1,5 @@
+import { PORTFOLIO_PROJECTS } from '@/content/projects'
+
 /**
  * Internet Explorer route registry.
  *
@@ -25,23 +27,38 @@ export interface IEPage {
   redirect?: boolean
 }
 
-const SITE = 'www.win7webos.com'
+const SITE = 'www.cadeduncan.com'
+
+/** One in-app page per portfolio project — /projects/<slug> subpages. */
+const PROJECT_SUBPAGES: IEPage[] = PORTFOLIO_PROJECTS.map((project) => ({
+  nickname: `about:projects/${project.slug}`,
+  url: `${SITE}/projects/${project.slug}`,
+  title: project.title,
+  redirect: false,
+}))
 
 export const IE_PAGES: IEPage[] = [
   { nickname: 'about:home', url: `${SITE}/home`, title: 'Home', redirect: false },
-  {
-    nickname: 'about:source-code',
-    url: `https://github.com/CadeDuncan0/win7-web-os`,
-    title: 'Source Code',
-    redirect: true,
-  },
+  { nickname: 'about:resume', url: `${SITE}/resume`, title: 'Resume', redirect: false },
+  { nickname: 'about:projects', url: `${SITE}/projects`, title: 'Projects', redirect: false },
+  ...PROJECT_SUBPAGES,
   {
     nickname: 'about:getting-started',
     url: `${SITE}/getting-started`,
     title: 'Getting Started',
     redirect: false,
   },
+  {
+    nickname: 'about:source-code',
+    url: `https://github.com/CadeDuncan0/portfolio-website-desktop`,
+    title: 'Source Code',
+    redirect: true,
+  },
 ]
+
+/** Top-level pages only — nested nicknames (subpages, e.g. `about:projects/…`)
+ *  stay out of the page-links row and the Home tiles. */
+export const IE_TOP_PAGES: IEPage[] = IE_PAGES.filter((page) => !page.nickname.includes('/'))
 
 /** The page IE opens on by default (its nickname). */
 export const DEFAULT_ROUTE = IE_PAGES[0].nickname
