@@ -12,6 +12,20 @@ export const CELL_HEIGHT = 80
 export const GRID_PADDING = 12
 export const TASKBAR_RESERVE = 40
 
+/** Usable grid dimensions for a viewport — the single source of the bounds
+ *  math shared by IconGrid's live layout and the persistence hydration clamp. */
+export function computeGridBounds(
+  viewportWidth: number,
+  viewportHeight: number
+): { maxColumns: number; maxRows: number } {
+  const availableHeight = viewportHeight - TASKBAR_RESERVE - GRID_PADDING * 2
+  const availableWidth = viewportWidth - GRID_PADDING * 2
+  return {
+    maxColumns: Math.max(1, Math.floor(availableWidth / CELL_WIDTH)),
+    maxRows: Math.max(1, Math.floor(availableHeight / CELL_HEIGHT)),
+  }
+}
+
 export function gridCellToPixels(cell: GridCell): { x: number; y: number } {
   return {
     x: cell.column * CELL_WIDTH + GRID_PADDING,
