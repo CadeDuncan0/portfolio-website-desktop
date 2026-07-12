@@ -30,11 +30,12 @@ jobs:
         uses: actions/checkout@v4
 
       # Step 2 — Install Node.js and enable npm caching.
-      # node-version '20' matches the win7-web-os template baseline.
+      # node-version '22' matches the win7-web-os template baseline
+      # (v20.x has known memory-leak issues).
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       # Step 3 — Install dependencies deterministically.
@@ -47,12 +48,7 @@ jobs:
       # `next build` runs type-checking, route analysis, and bundle generation —
       # a comprehensive integration check. The template ships no ESLint/Prettier
       # config, so linting/format steps are intentionally omitted.
-      #
-      # NOTE: module-scope `createClient()` (src/lib/auth.ts, useAuthListener.ts)
-      # means prerendering requires the Supabase env vars even at build time.
       - name: Build Next.js
         run: npm run build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_ADMIN_EMAIL: ${{ secrets.NEXT_PUBLIC_ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}

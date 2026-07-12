@@ -52,6 +52,8 @@ dockerfile
 docker-compose.yml
 .dockerignore
 scripts/
+.mcp.json
+.playwright-mcp/
 
 # testing (removed from the template; ignore local re-additions)
 /coverage
