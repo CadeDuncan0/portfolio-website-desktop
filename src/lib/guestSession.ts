@@ -5,7 +5,7 @@ import { DEFAULT_USER_ICON } from '@/lib/userIcons'
 /** Single owner of every client representation of the Guest session:
  *
  *    1. The sessionStorage marker — tab-lifetime source of truth.
- *    2. The cookie — the server proxy's visibility into that marker.
+ *    2. The cookie — the server render switch's visibility into that marker.
  *
  *  (Redux holds the third, reactive copy; the auth layer dispatches it from
  *  the values returned here.) No other module touches the marker or the
@@ -30,7 +30,7 @@ export type GuestSession = z.infer<typeof GuestSessionSchema>
 /**
  * Begins a Guest session. No network call — Guest is a purely client-side
  * role assertion. Writes the sessionStorage marker (survives reloads within
- * the tab, ends when the tab closes) and the cookie the proxy reads.
+ * the tab, ends when the tab closes) and the cookie the server reads.
  * Returns null when called outside a browser context.
  */
 export function beginGuestSession(avatarSrc: string): GuestSession | null {

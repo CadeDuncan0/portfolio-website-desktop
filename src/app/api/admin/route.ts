@@ -5,8 +5,8 @@ import z from 'zod'
 import { ADMIN_COOKIE_NAME, adminToken, isAdminPassword } from '@/lib/adminAuth'
 
 // Admin session endpoint. POST verifies the password and issues the httpOnly
-// admin cookie; DELETE clears it (sign-out). The cookie is what the proxy gates
-// /win7/desktop on — the client never sees its value.
+// admin cookie; DELETE clears it (sign-out). The cookie is what the root page's
+// server render switch gates the desktop on — the client never sees its value.
 
 const LoginSchema = z.object({ password: z.string() })
 
