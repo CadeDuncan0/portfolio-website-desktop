@@ -438,7 +438,11 @@
   --ie-content-bg: #fff;
   /* Placeholder project-thumbnail fill (replaced with real assets in Task 12). */
   --ie-project-thumb-bg: rgba(200, 210, 220, 0.5);
+<<<<<<< HEAD
   /* In-page content cards (Home tiles, Getting Started card, project cards).
+=======
+  /* In-page content cards (Home tiles, Getting Started card).
+>>>>>>> win7/main
      Referenced by the IE page stylesheets. */
   --ie-external-card-bg: rgba(245, 249, 253, 0.9);
   --ie-external-card-border: 1px solid rgba(160, 180, 200, 0.55);

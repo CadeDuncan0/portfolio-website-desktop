@@ -8,9 +8,12 @@ export const WINDOW_KEYS = {
   internetExplorer: 'window-internet-explorer',
   welcome: 'window-welcome',
   gettingStarted: 'window-getting-started',
+<<<<<<< HEAD
   resume: 'window-resume',
   projects: 'window-projects',
   mario: 'window-supermariobros',
+=======
+>>>>>>> win7/main
 } as const
 
 export type WindowKey = (typeof WINDOW_KEYS)[keyof typeof WINDOW_KEYS]

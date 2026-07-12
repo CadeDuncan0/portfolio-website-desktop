@@ -8,7 +8,10 @@ import {
   writeWindowPositions,
   writeWindowSizes,
 } from '@/lib/desktopPersistence'
+<<<<<<< HEAD
 import { computeGridBounds } from '@/lib/gridMath'
+=======
+>>>>>>> win7/main
 import { useAppStore } from '@/store/hooks'
 import { hydrateIconPositions, selectIconsById } from '@/store/slices/desktopSlice'
 import {
@@ -24,8 +27,12 @@ import {
  * sessionStorage markers, then subscribes to the store and mirrors every later
  * change back. Change detection is by reference identity — Immer replaces
  * exactly the objects a reducer touched, so a stale reference means nothing to
+<<<<<<< HEAD
  * write. Off-screen hydrated window positions self-heal: WindowWrapper re-clamps
  * committed geometry to the current viewport when a window of that kind opens.
+=======
+ * write.
+>>>>>>> win7/main
  */
 export function useDesktopPersistence(): void {
   const store = useAppStore()
@@ -41,6 +48,7 @@ export function useDesktopPersistence(): void {
     }
     const savedPositions = readIconPositions()
     if (savedPositions) {
+<<<<<<< HEAD
       // Saved cells were valid for the viewport they were written under; the
       // window may have shrunk since. Clamp into the current grid so no icon
       // is restored off-screen where it could never be dragged back.
@@ -55,6 +63,9 @@ export function useDesktopPersistence(): void {
         ])
       )
       store.dispatch(hydrateIconPositions(clamped))
+=======
+      store.dispatch(hydrateIconPositions(savedPositions))
+>>>>>>> win7/main
     }
 
     let lastSizes = selectWindowSizes(store.getState())

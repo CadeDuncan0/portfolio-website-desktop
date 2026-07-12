@@ -14,7 +14,10 @@ import {
   ResumePage,
 } from './pages'
 import { useIENavigation } from './useIENavigation'
+<<<<<<< HEAD
 import { projectBySlug } from '@/content/projects'
+=======
+>>>>>>> win7/main
 import { assetPaths, withBasePath } from '@/lib/assetPaths'
 
 export interface InternetExplorerWindowProps {

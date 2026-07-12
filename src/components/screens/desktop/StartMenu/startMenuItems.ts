@@ -12,7 +12,7 @@ export interface StartMenuShortcut {
   id: string
   label: string
   iconSrc?: string
-  /** Hide this shortcut from guest sessions (guests cannot see or open it). */
+  hideForAdmin?: boolean
   hideForGuest?: boolean
   action:
     | {

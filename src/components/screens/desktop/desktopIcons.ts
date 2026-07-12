@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import { MARIO_WINDOW_SIZE } from './MarioWindow'
+=======
+>>>>>>> win7/main
 import { WINDOW_KEYS, type WindowKey } from './windowKeys'
 import { assetPaths } from '@/lib/assetPaths'
 import type { WindowKind } from '@/store/slices/windowSlice'
@@ -37,7 +40,10 @@ export const DESKTOP_ICONS: DesktopIconDefinition[] = [
     windowKind: 'welcome',
     windowTitle: 'Welcome',
     windowKey: WINDOW_KEYS.welcome,
+<<<<<<< HEAD
     hideForAdmin: true
+=======
+>>>>>>> win7/main
   },
   {
     id: 'icon-getting-started',
@@ -47,6 +53,7 @@ export const DESKTOP_ICONS: DesktopIconDefinition[] = [
     // Matches an IE page title, so the window opens directly on that page.
     windowTitle: 'Getting Started',
     windowKey: WINDOW_KEYS.gettingStarted,
+<<<<<<< HEAD
     hideForAdmin: true,
   },
   {
@@ -75,5 +82,7 @@ export const DESKTOP_ICONS: DesktopIconDefinition[] = [
     windowTitle: 'Super Mario Bros.',
     windowKey: WINDOW_KEYS.mario,
     windowSize: MARIO_WINDOW_SIZE,
+=======
+>>>>>>> win7/main
   },
 ]

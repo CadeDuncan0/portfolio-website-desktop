@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { isWindowDisabled } from '../disabledWindows'
+import { openWindowIfEnabled } from '../openWindowIfEnabled'
 import styles from './StartMenu.module.css'
 import { StartMenuItem } from './StartMenuItem'
 import {
@@ -13,7 +14,6 @@ import {
   RIGHT_COLUMN_SHORTCUTS,
   type StartMenuShortcut,
 } from './startMenuItems'
-import { openWindowIfEnabled } from '../openWindowIfEnabled'
 import { Button } from '@/components/windows7/Button/index'
 import { signOut } from '@/lib/auth'
 import { DEFAULT_USER_ICON } from '@/lib/userIcons'
@@ -31,10 +31,10 @@ export interface StartMenuProps {
 }
 
 /** A shortcut is dropped when its window is turned off site-wide, or (for guests)
- *  when it is flagged hideForGuest. Guest is the complement of admin, so the
- *  hideForGuest drop fires when !isAdmin. Non-window actions carry no key. */
+ *  when it is flagged hideForGuest. Non-window actions carry no key to disable. */
 function isShortcutDisabled(s: StartMenuShortcut, isAdmin: boolean): boolean {
   return (
+    (isAdmin && Boolean(s.hideForAdmin)) ||
     (!isAdmin && Boolean(s.hideForGuest)) ||
     (s.action.type === 'openWindow' && isWindowDisabled(s.action.windowKey, isAdmin))
   )
