@@ -8,16 +8,15 @@ import { useEffect, useState } from 'react'
 import { DesktopIcon } from '../DesktopIcon'
 import styles from './IconGrid.module.css'
 import { useDesktopSensors } from '@/hooks/useDesktopSensors'
+import type { DesktopIconDefinition } from '../desktopIcons'
 import {
-  CELL_HEIGHT,
-  CELL_WIDTH,
-  GRID_PADDING,
-  TASKBAR_RESERVE,
+  computeGridBounds,
   gridCellToPixels,
   pixelsToGridCell,
   isCellOccupied,
   findNextFreeCell,
 } from '@/lib/gridMath'
+import { openWindowIfEnabled } from '../openWindowIfEnabled'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
   registerIcon,
@@ -25,16 +24,9 @@ import {
   clearSelection,
   selectDesktopIcons,
 } from '@/store/slices/desktopSlice'
-import { openWindow, type WindowKind } from '@/store/slices/windowSlice'
 
 interface IconGridProps {
-  icons: Array<{
-    id: string
-    label: string
-    iconSrc: string
-    windowKind: WindowKind
-    windowTitle: string
-  }>
+  icons: DesktopIconDefinition[]
 }
 
 export function IconGrid({ icons: _icons }: IconGridProps) {
@@ -58,17 +50,12 @@ export function IconGrid({ icons: _icons }: IconGridProps) {
   const [gridBounds, setGridBounds] = useState({ maxColumns: 1, maxRows: 1 })
 
   useEffect(() => {
-    const computeGridBounds = () => {
-      const availableHeight = window.innerHeight - TASKBAR_RESERVE - GRID_PADDING * 2
-      const availableWidth = window.innerWidth - GRID_PADDING * 2
-      setGridBounds({
-        maxColumns: Math.max(1, Math.floor(availableWidth / CELL_WIDTH)),
-        maxRows: Math.max(1, Math.floor(availableHeight / CELL_HEIGHT)),
-      })
+    const updateGridBounds = () => {
+      setGridBounds(computeGridBounds(window.innerWidth, window.innerHeight))
     }
-    computeGridBounds()
-    window.addEventListener('resize', computeGridBounds)
-    return () => window.removeEventListener('resize', computeGridBounds)
+    updateGridBounds()
+    window.addEventListener('resize', updateGridBounds)
+    return () => window.removeEventListener('resize', updateGridBounds)
   }, [])
 
   // Drop handler: convert pixel delta → grid cell → clamp → collision check → dispatch
@@ -117,9 +104,11 @@ export function IconGrid({ icons: _icons }: IconGridProps) {
             iconSrc={iconDef.iconSrc}
             onOpen={() =>
               dispatch(
-                openWindow({
+                openWindowIfEnabled({
                   kind: iconDef.windowKind,
                   title: iconDef.windowTitle,
+                  windowKey: iconDef.windowKey,
+                  size: iconDef.windowSize,
                 })
               )
             }

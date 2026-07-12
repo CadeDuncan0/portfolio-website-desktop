@@ -1,3 +1,5 @@
+import { MARIO_WINDOW_SIZE } from '../MarioWindow'
+import { WINDOW_KEYS, type WindowKey } from '../windowKeys'
 import { assetPaths } from '@/lib/assetPaths'
 import type { WindowKind } from '@/store/slices/windowSlice'
 
@@ -10,8 +12,18 @@ export interface StartMenuShortcut {
   id: string
   label: string
   iconSrc?: string
+  /** Hide this shortcut from guest sessions (guests cannot see or open it). */
+  hideForGuest?: boolean
   action:
-    | { type: 'openWindow'; kind: WindowKind; title: string }
+    | {
+        type: 'openWindow'
+        kind: WindowKind
+        title: string
+        /** Stable id used for the disabled-window switch and the openWindow gate. */
+        windowKey: WindowKey
+        /** Optional initial window geometry; omitted = windowSlice default. */
+        size?: { width: number; height: number }
+      }
     | { type: 'openLink'; url: string }
     | { type: 'signOut' }
 }
@@ -24,7 +36,7 @@ export interface StartMenuTab {
 const FOLDER_ICON = assetPaths.desktopIcons.windowsExplorer
 
 const RIGHT_COLUMN_TABS = [
-  { title: 'Source Code', url: 'https://github.com/CadeDuncan0/win7-web-os' },
+  { title: 'Source Code', url: 'https://github.com/CadeDuncan0/portfolio-website-desktop' },
 ] as StartMenuTab[]
 
 export const LEFT_COLUMN_SHORTCUTS: StartMenuShortcut[] = [
@@ -32,13 +44,57 @@ export const LEFT_COLUMN_SHORTCUTS: StartMenuShortcut[] = [
     id: 'sm-ie',
     label: 'Internet Explorer',
     iconSrc: assetPaths.desktopIcons.internetExplorer,
-    action: { type: 'openWindow', kind: 'internet-explorer', title: 'Internet Explorer' },
+    action: {
+      type: 'openWindow',
+      kind: 'internet-explorer',
+      title: 'Internet Explorer',
+      windowKey: WINDOW_KEYS.internetExplorer,
+    },
+  },
+  {
+    id: 'sm-resume',
+    label: 'Resume',
+    iconSrc: assetPaths.desktopIcons.resume,
+    action: {
+      type: 'openWindow',
+      kind: 'internet-explorer',
+      title: 'Resume',
+      windowKey: WINDOW_KEYS.resume,
+    },
+  },
+  {
+    id: 'sm-projects',
+    label: 'Projects',
+    iconSrc: assetPaths.desktopIcons.projects,
+    action: {
+      type: 'openWindow',
+      kind: 'internet-explorer',
+      title: 'Projects',
+      windowKey: WINDOW_KEYS.projects,
+    },
+  },
+  {
+    id: 'sm-mario',
+    label: 'Super Mario Bros.',
+    iconSrc: assetPaths.desktopIcons.superMarioBros,
+    action: {
+      type: 'openWindow',
+      kind: 'mario',
+      title: 'Super Mario Bros.',
+      windowKey: WINDOW_KEYS.mario,
+      size: MARIO_WINDOW_SIZE,
+    },
   },
   {
     id: 'sm-getting-started',
     label: 'Getting Started',
     iconSrc: FOLDER_ICON,
-    action: { type: 'openWindow', kind: 'internet-explorer', title: 'Getting Started' },
+    action: {
+      type: 'openWindow',
+      kind: 'internet-explorer',
+      title: 'Getting Started',
+      windowKey: WINDOW_KEYS.gettingStarted,
+    },
   },
 ]
 
