@@ -21,20 +21,6 @@ const WINDOW_SIZES_KEY = 'win7.windowSizes'
 const WINDOW_POSITIONS_KEY = 'win7.windowPositions'
 const ICON_POSITIONS_KEY = 'win7.iconPositions'
 
-<<<<<<< HEAD
-// Positive/non-negative bounds so a tampered marker can't hydrate negative or
-// zero geometry; markers that fail are evicted like any other malformed value.
-const WindowSizesSchema = z.record(
-  z.string(),
-  z.object({ width: z.number().positive(), height: z.number().positive() })
-)
-
-// Positions are committed pre-clamped to the viewport, so both axes are >= 0
-// (0 is the top-left corner — non-negative, not strictly positive).
-const WindowPositionsSchema = z.record(
-  z.string(),
-  z.object({ x: z.number().min(0), y: z.number().min(0) })
-=======
 const WindowSizesSchema = z.record(
   z.string(),
   z.object({ width: z.number(), height: z.number() })
@@ -43,16 +29,11 @@ const WindowSizesSchema = z.record(
 const WindowPositionsSchema = z.record(
   z.string(),
   z.object({ x: z.number(), y: z.number() })
->>>>>>> win7/main
 )
 
 const IconPositionsSchema = z.record(
   z.string(),
-<<<<<<< HEAD
-  z.object({ column: z.number().int().min(0), row: z.number().int().min(0) })
-=======
   z.object({ column: z.number(), row: z.number() })
->>>>>>> win7/main
 )
 
 export type PersistedWindowSizes = Partial<Record<WindowKind, { width: number; height: number }>>

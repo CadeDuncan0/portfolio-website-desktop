@@ -8,13 +8,13 @@
  * access. Keys (not display titles) are matched, so renaming a window's title
  * never silently re-enables it.
  */
-import type { WindowKey } from './windowKeys'
+import { WINDOW_KEYS, type WindowKey } from './windowKeys'
 
 // To disable a window, add its key from WINDOW_KEYS (windowKeys.ts) below, e.g.
 // WINDOW_KEYS.welcome — import { WINDOW_KEYS } when you do.
 export const DISABLED_WINDOWS_GUEST: ReadonlySet<WindowKey> = new Set<WindowKey>([])
 
-export const DISABLED_WINDOWS_ADMIN: ReadonlySet<WindowKey> = new Set<WindowKey>([])
+export const DISABLED_WINDOWS_ADMIN: ReadonlySet<WindowKey> = new Set<WindowKey>([WINDOW_KEYS.welcome, WINDOW_KEYS.gettingStarted])
 
 /** True when the window with this key is turned off everywhere. */
 export function isWindowDisabled(key: WindowKey, isAdmin?: boolean): boolean {

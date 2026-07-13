@@ -30,13 +30,9 @@ export function DesktopScreen({ isAdmin = false }: DesktopScreenProps) {
   // the array identity is stable across re-renders — it is a dependency of
   // IconGrid's registration effect.
   const visibleIcons = useMemo(() => {
-<<<<<<< HEAD
-    const availableIcons = DESKTOP_ICONS.filter((icon) => !isWindowDisabled(icon.windowKey, isAdmin))
-=======
     const availableIcons = DESKTOP_ICONS.filter(
       (icon) => !isWindowDisabled(icon.windowKey, isAdmin)
     )
->>>>>>> win7/main
     return isAdmin
       ? availableIcons.filter((icon) => !icon.hideForAdmin)
       : availableIcons.filter((icon) => !icon.hideForGuest)

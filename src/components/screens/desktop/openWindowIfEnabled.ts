@@ -7,13 +7,8 @@ import { openWindow, type WindowKind } from '@/store/slices/windowSlice'
 /**
  * The single gate for opening a window. Refuses windows turned off site-wide
  * (see disabledWindows) before dispatching openWindow, so no launcher — desktop
-<<<<<<< HEAD
- * icon, Start Menu, or an in-app button — can open a disabled window. Every
- * launch path dispatches this thunk instead of the raw openWindow action.
-=======
  * icon or Start Menu — can open a disabled window. Every launch path dispatches
  * this thunk instead of the raw openWindow action.
->>>>>>> win7/main
  */
 export const openWindowIfEnabled =
   (params: {

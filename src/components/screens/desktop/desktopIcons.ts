@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 import { MARIO_WINDOW_SIZE } from './MarioWindow'
-=======
->>>>>>> win7/main
 import { WINDOW_KEYS, type WindowKey } from './windowKeys'
 import { assetPaths } from '@/lib/assetPaths'
 import type { WindowKind } from '@/store/slices/windowSlice'
@@ -39,11 +36,7 @@ export const DESKTOP_ICONS: DesktopIconDefinition[] = [
     iconSrc: FOLDER_ICON,
     windowKind: 'welcome',
     windowTitle: 'Welcome',
-    windowKey: WINDOW_KEYS.welcome,
-<<<<<<< HEAD
-    hideForAdmin: true
-=======
->>>>>>> win7/main
+    windowKey: WINDOW_KEYS.welcome
   },
   {
     id: 'icon-getting-started',
@@ -52,9 +45,7 @@ export const DESKTOP_ICONS: DesktopIconDefinition[] = [
     windowKind: 'internet-explorer',
     // Matches an IE page title, so the window opens directly on that page.
     windowTitle: 'Getting Started',
-    windowKey: WINDOW_KEYS.gettingStarted,
-<<<<<<< HEAD
-    hideForAdmin: true,
+    windowKey: WINDOW_KEYS.gettingStarted
   },
   {
     id: 'icon-resume',
@@ -63,7 +54,7 @@ export const DESKTOP_ICONS: DesktopIconDefinition[] = [
     windowKind: 'internet-explorer',
     windowTitle: 'Resume',
     windowKey: WINDOW_KEYS.resume,
-    hideForAdmin: true,
+    hideForAdmin: true    
   },
   {
     id: 'icon-projects',
@@ -72,7 +63,7 @@ export const DESKTOP_ICONS: DesktopIconDefinition[] = [
     windowKind: 'internet-explorer',
     windowTitle: 'Projects',
     windowKey: WINDOW_KEYS.projects,
-    hideForAdmin: true,
+    hideForAdmin: true
   },
   {
     id: 'icon-mario',
@@ -82,7 +73,5 @@ export const DESKTOP_ICONS: DesktopIconDefinition[] = [
     windowTitle: 'Super Mario Bros.',
     windowKey: WINDOW_KEYS.mario,
     windowSize: MARIO_WINDOW_SIZE,
-=======
->>>>>>> win7/main
   },
 ]

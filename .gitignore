@@ -48,11 +48,10 @@ CLAUDE.md
 eslint.config.mjs
 commitlint.config.js
 lint-staged.config.*
-dockerfile
+Dockerfile
 docker-compose.yml
 .dockerignore
 scripts/
-.mcp.json
 .playwright-mcp/
 
 # testing (removed from the template; ignore local re-additions)
