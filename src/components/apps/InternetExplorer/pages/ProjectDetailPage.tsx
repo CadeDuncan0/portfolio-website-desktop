@@ -1,11 +1,9 @@
 'use client'
 
 import styles from './ProjectDetailPage.module.css'
-import { MARIO_WINDOW_SIZE } from '@/components/screens/desktop/MarioWindow'
-import { openWindowIfEnabled } from '@/components/screens/desktop/openWindowIfEnabled'
-import { WINDOW_KEYS } from '@/components/screens/desktop/windowKeys'
 import type { PortfolioProject } from '@/content/projects'
 import { withBasePath } from '@/lib/assetPaths'
+import { launchApplication } from '@/lib/launchApplication'
 import { useAppDispatch } from '@/store/hooks'
 
 interface ProjectDetailPageProps {
@@ -19,15 +17,11 @@ interface ProjectDetailPageProps {
 export function ProjectDetailPage({ project, onNavigate }: ProjectDetailPageProps) {
   const dispatch = useAppDispatch()
 
+  // Routed through the shared launch gate, so the demo button honours the same
+  // disabled/role rules as the desktop icon and Start Menu shortcut. Title and
+  // geometry come from the registry record.
   const handlePlayMario = () => {
-    dispatch(
-      openWindowIfEnabled({
-        kind: 'mario',
-        title: 'Super Mario Bros.',
-        windowKey: WINDOW_KEYS.mario,
-        size: MARIO_WINDOW_SIZE,
-      })
-    )
+    dispatch(launchApplication('mario'))
   }
 
   return (

@@ -2,6 +2,7 @@
  * Application registry — the single fork edit point for everything launchable.
  */
 import { internetExplorerApp } from '@/components/apps/InternetExplorer'
+import { marioApp, MARIO_WINDOW_SIZE } from '@/components/apps/MarioWindow'
 import type { WindowApp } from '@/components/apps/types'
 import { welcomeApp } from '@/components/apps/WelcomeWindow'
 import { assetPaths } from '@/lib/assetPaths'
@@ -30,10 +31,14 @@ export const APPLICATIONS = [
     iconSrc: assetPaths.desktopIcons.internetExplorer,
   },
   {
+    // Desktop-only: the tour has never had a Start Menu shortcut, and admin
+    // sessions skip it entirely.
     key: 'welcome',
     title: 'Welcome',
     component: welcomeApp,
     iconSrc: assetPaths.desktopIcons.folderWithDocuments,
+    startMenuShortcut: false,
+    hideForAdmin: true,
   },
   {
     key: 'getting-started',
@@ -41,6 +46,35 @@ export const APPLICATIONS = [
     component: internetExplorerApp,
     iconSrc: assetPaths.desktopIcons.folderWithDocuments,
     ieRoute: 'about:getting-started',
+    hideForAdmin: true,
+  },
+  {
+    // Portfolio content reachable from the Start Menu only — no desktop icon.
+    key: 'resume',
+    title: 'Resume',
+    component: internetExplorerApp,
+    iconSrc: assetPaths.desktopIcons.resume,
+    ieRoute: 'about:resume',
+    desktopIcon: false,
+    startMenuShortcut: true,
+    startMenuColumn: 'left',
+  },
+  {
+    key: 'projects',
+    title: 'Projects',
+    component: internetExplorerApp,
+    iconSrc: assetPaths.desktopIcons.projects,
+    ieRoute: 'about:projects',
+    desktopIcon: false,
+    startMenuShortcut: true,
+    startMenuColumn: 'left',
+  },
+  {
+    key: 'mario',
+    title: 'Super Mario Bros.',
+    component: marioApp,
+    iconSrc: assetPaths.desktopIcons.superMarioBros,
+    defaultSize: MARIO_WINDOW_SIZE,
   },
   {
     // Windowless application (no `component`): an external link. Launching it opens
