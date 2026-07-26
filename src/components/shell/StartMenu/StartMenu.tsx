@@ -140,7 +140,8 @@ export function StartMenu({ isOpen, onClose, avatarSrc }: StartMenuProps) {
     await signOut()
     dispatch(clearSession())
     // Cookies are gone — refresh so the server re-renders this same URL as
-    // the logon screen (at /win7/desktop the proxy redirects to /win7).
+    // the logon screen. The OS is served only at the app root, so there is no
+    // second URL to redirect away from.
     router.refresh()
   }
 
