@@ -9,7 +9,6 @@
  * offers "Remove notification", which retires the icon for the session.
  */
 import type { WindowKey } from './applications'
-import { assetPaths } from '@/lib/assetPaths'
 
 export interface NotificationDefinition {
   /** Stable id — also dedupes seeding, so each notification exists once. */
@@ -27,27 +26,14 @@ export interface NotificationDefinition {
 
 export const NOTIFICATIONS: NotificationDefinition[] = [
   {
+    // Points at Projects rather than Welcome so the action works in both
+    // sessions — Welcome and Getting Started are hideForAdmin, and the launch
+    // gate refuses an app hidden from the current role.
     id: 'welcome',
-    title: 'Welcome to win7-web-os!',
+    title: 'Welcome to my desktop',
     message:
-      'You are on a Windows 7 desktop running in your browser. Double-click an icon to explore.',
-    action: { label: 'Take the tour', appKey: 'welcome' },
-  },
-  {
-    id: 'version-1-4',
-    title: 'Version 1.4 released!',
-    message:
-      'Applications registry, right-click menus, tray notifications, and a Show Desktop button.',
-    iconSrc: assetPaths.systemIcons.windowsFlag,
-    action: { label: 'Getting Started guide', appKey: 'getting-started' },
-  },
-  {
-    // Example fork announcement — flip `disabled` to false to use it.
-    id: 'fork-tip',
-    title: 'Make it yours',
-    message: 'Fork the template and edit applications.ts to put your own apps on this desktop.',
-    action: { label: 'Getting Started guide', appKey: 'getting-started' },
-    disabled: true,
+      "You're on a Windows 7 desktop running in your browser. Double-click an icon to explore, or start with my projects.",
+    action: { label: 'Open Projects', appKey: 'projects' },
   },
 ]
 
