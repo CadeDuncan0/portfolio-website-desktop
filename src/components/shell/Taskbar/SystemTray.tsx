@@ -16,14 +16,8 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
 })
 
-export interface SystemTrayProps {
-  initialDate?: Date
-}
-
-export function SystemTray({ initialDate }: SystemTrayProps) {
-  // Lazy `new Date()` (not Intl's implicit "now") so faked timers in tests
-  // apply, and the value is a real Date from the first render.
-  const [now, setNow] = useState(() => initialDate ?? new Date())
+export function SystemTray() {
+  const [now, setNow] = useState(() => new Date())
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000)
@@ -33,8 +27,11 @@ export function SystemTray({ initialDate }: SystemTrayProps) {
   // suppressHydrationWarning: the prerendered HTML bakes in the build-time
   // clock; the client's first paint always disagrees. The mismatch is
   // expected and self-corrects on the next interval tick.
+  //
+  // No role="status": that would make this an aria-live region, and the 1s
+  // interval would have a screen reader read the clock over everything else.
   return (
-    <div className={styles.systemTray} role="status" aria-label="System tray">
+    <div className={styles.systemTray} aria-label="System tray">
       <time className={styles.time} dateTime={now.toISOString()} suppressHydrationWarning>
         {timeFormatter.format(now)}
       </time>

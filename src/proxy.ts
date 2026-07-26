@@ -19,7 +19,6 @@ export async function proxy(request: NextRequest) {
   const loginUrl = request.nextUrl.clone()
   loginUrl.pathname = '/win7'
   loginUrl.search = ''
-  loginUrl.searchParams.set('from', request.nextUrl.pathname)
   return NextResponse.redirect(loginUrl)
 }
 

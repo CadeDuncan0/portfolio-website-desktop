@@ -5,7 +5,7 @@
  *  stateless 7.css <Window> primitive inside a positioned shell. */
 
 import { motion } from 'framer-motion'
-import { type CSSProperties, type ReactNode, useRef } from 'react'
+import { type CSSProperties, type ReactNode } from 'react'
 
 import styles from './WindowWrapper.module.css'
 import { Window } from '@/components/ui/Window'
@@ -46,8 +46,6 @@ export function WindowWrapper({
   const topWindowId = useAppSelector(selectTopWindowId)
   const isPeeking = useAppSelector(selectIsPeeking)
 
-  const exitModeRef = useRef<'close' | 'minimize'>('close')
-
   const drag = useWindowDrag({
     windowId,
     position: windowData?.position ?? { x: 0, y: 0 },
@@ -74,12 +72,10 @@ export function WindowWrapper({
   }
 
   function handleClose() {
-    exitModeRef.current = 'close'
     dispatch(closeWindow({ id: windowId }))
   }
 
   function handleMinimize() {
-    exitModeRef.current = 'minimize'
     dispatch(minimizeWindow({ id: windowId }))
   }
 
@@ -142,13 +138,19 @@ export function WindowWrapper({
     zIndex: windowData.zIndex,
   }
 
+  // A minimize unmounts the window but leaves its slice entry standing, so
+  // isMinimized is the one exit signal every minimize path shares — title bar,
+  // taskbar button and Show Desktop all reach it through the reducers. A close
+  // deletes the entry, so the shrink-away variant is the close case by
+  // elimination.
   const variants = {
     initial: { opacity: 0, scale: 0.95 },
     animate: { opacity: 1, scale: 1 },
-    exit: () =>
-      exitModeRef.current === 'minimize'
-        ? { opacity: 0, scale: 0.5, transition: { duration: 0.1, ease: 'easeOut' as const } }
-        : { opacity: 0, scale: 0.95, transition: { duration: 0.1, ease: 'easeOut' as const } },
+    exit: {
+      opacity: 0,
+      scale: windowData.isMinimized ? 0.5 : 0.95,
+      transition: { duration: 0.1, ease: 'easeOut' as const },
+    },
   }
 
   return (

@@ -15,6 +15,7 @@ import {
   GRID_PADDING,
   TASKBAR_RESERVE,
   gridCellToPixels,
+  gridMaxRows,
   pixelsToGridCell,
   isCellOccupied,
   findNextFreeCell,
@@ -45,12 +46,16 @@ export function IconGrid({ apps, onContextMenu }: IconGridProps) {
   const hiddenIconIds = useAppSelector(selectHiddenIconIds)
 
   useEffect(() => {
+    // gridMaxRows() rather than gridBounds: this effect is declared first, so it
+    // runs a tick before the bounds below are measured.
+    const maxRows = gridMaxRows()
     apps.forEach((app, index) => {
       dispatch(
         registerIcon({
           id: desktopIconId(app.key),
           position: { column: 0, row: index },
           defaultPosition: { column: 0, row: index },
+          maxRows,
         })
       )
     })
@@ -94,9 +99,11 @@ export function IconGrid({ apps, onContextMenu }: IconGridProps) {
     }
 
     // Hidden icons free their cells, so a drop only collides with visible ones.
-    const visibleIcons = desktopIcons.filter((i) => !hiddenIconIds.includes(i.id))
-    if (isCellOccupied(gridCell, visibleIcons, id)) {
-      gridCell = findNextFreeCell(gridCell, visibleIcons, id, gridBounds.maxRows)
+    const occupied = desktopIcons
+      .filter((i) => i.id !== id && !hiddenIconIds.includes(i.id))
+      .map((i) => i.position)
+    if (isCellOccupied(gridCell, occupied)) {
+      gridCell = findNextFreeCell(gridCell, occupied, gridBounds.maxRows)
     }
 
     dispatch(setIconPosition({ id, position: gridCell }))

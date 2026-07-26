@@ -23,7 +23,7 @@ import {
   writeWindowSizes,
   writeRemovedNotifications,
 } from '@/lib/desktopPersistence'
-import { TASKBAR_RESERVE } from '@/lib/gridMath'
+import { TASKBAR_RESERVE, gridMaxRows } from '@/lib/gridMath'
 import { useAppStore } from '@/store/hooks'
 import {
   hydrateHiddenIcons,
@@ -85,7 +85,7 @@ export function useDesktopPersistence(isAdmin: boolean): void {
     if (persistDesktopIconData(isAdmin)) {
       const savedPositions = readIconPositions(role)
       if (savedPositions) {
-        store.dispatch(hydrateIconPositions(savedPositions))
+        store.dispatch(hydrateIconPositions({ positions: savedPositions, maxRows: gridMaxRows() }))
       }
       const savedHidden = readHiddenIcons(role)
       if (savedHidden) {

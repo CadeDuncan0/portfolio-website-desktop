@@ -214,22 +214,6 @@ const windowSlice = createSlice({
       state.isPeeking = action.payload
     },
 
-    // ── restoreWindow ─────────────────────────────────────────────────────
-    // Payload: { id: string }
-    restoreWindow(state, action: PayloadAction<{ id: string }>) {
-      const window = state.byId[action.payload.id]
-      //   1. If window does not exist, return.
-      if (!window) {
-        return
-      }
-      //   2. Set isMinimized = false.
-      window.isMinimized = false
-      //   3. Bump zCounter and assign window.zIndex = state.zCounter
-      //      (restore brings to front — same as focusWindow's promotion).
-      state.zCounter++
-      window.zIndex = state.zCounter
-    },
-
     // ── toggleMaximize ────────────────────────────────────────────────────
     // Payload: { id: string; viewport: { width: number; height: number } }
     toggleMaximize(
@@ -412,11 +396,6 @@ const windowSlice = createSlice({
 // ─── Selectors ──────────────────────────────────────────────────────────────
 
 // Category 1 — primitive field access. No memoization needed.
-export const selectZCounter = (state: RootState): number => {
-  return state.window.zCounter
-}
-
-// Category 1 — primitive field access. No memoization needed.
 export const selectIsPeeking = (state: RootState): boolean => {
   return state.window.isPeeking
 }
@@ -508,7 +487,6 @@ export const {
   minimizeWindow,
   minimizeAll,
   setPeek,
-  restoreWindow,
   toggleMaximize,
   moveWindow,
   resizeWindow,

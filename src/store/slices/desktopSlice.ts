@@ -55,29 +55,12 @@ function resetDesktopIcons(state: DesktopState): void {
   })
 }
 
-// Scan down rows from `desired` for the first cell no already-registered icon
-// occupies (compared via `cellOf`, so the live layout and the reset layout are
-// each kept collision-free). Column-major single-column growth mirrors the seed
-// layout; the finite icon count guarantees a free row is found and terminates.
-function firstFreeCell(
-  desired: GridCell,
-  icons: DesktopIcon[],
-  cellOf: (icon: DesktopIcon) => GridCell
-): GridCell {
-  const { column } = desired
-  let { row } = desired
-  while (icons.some((icon) => cellOf(icon).column === column && cellOf(icon).row === row)) {
-    row += 1
-  }
-  return { column, row }
-}
-
 const desktopSlice = createSlice({
   name: 'desktop',
   initialState,
   reducers: {
     // ── registerIcon ──────────────────────────────────────────────────────
-    registerIcon(state, action: PayloadAction<DesktopIcon>) {
+    registerIcon(state, action: PayloadAction<DesktopIcon & { maxRows: number }>) {
       if (state.iconsById[action.payload.id]) {
         return
       }
@@ -88,17 +71,18 @@ const desktopSlice = createSlice({
       // layout can stack, e.g. when a same-tab role switch registers a new icon
       // onto a row a prior role already placed. A hydrated position still wins
       // over the seed as the desired starting cell.
+      const { maxRows } = action.payload
       const registered = state.iconIds.map((id) => state.iconsById[id])
-      const defaultPosition = firstFreeCell(
+      const defaultPosition = findNextFreeCell(
         action.payload.defaultPosition,
-        registered,
-        (icon) => icon.defaultPosition
+        registered.map((icon) => icon.defaultPosition),
+        maxRows
       )
       const saved = state.savedPositions[action.payload.id]
-      const position = firstFreeCell(
+      const position = findNextFreeCell(
         saved ?? action.payload.position,
-        registered,
-        (icon) => icon.position
+        registered.map((icon) => icon.position),
+        maxRows
       )
       state.iconsById[action.payload.id] = {
         id: action.payload.id,
@@ -189,8 +173,8 @@ const desktopSlice = createSlice({
       }
       const visible = state.iconIds
         .filter((otherId) => otherId !== id && !state.hiddenIconIds.includes(otherId))
-        .map((otherId) => state.iconsById[otherId])
-      icon.position = findNextFreeCell(icon.position, visible, id, maxRows)
+        .map((otherId) => state.iconsById[otherId].position)
+      icon.position = findNextFreeCell(icon.position, visible, maxRows)
     },
 
     // ── hydrateHiddenIcons ────────────────────────────────────────────────
@@ -201,12 +185,17 @@ const desktopSlice = createSlice({
     },
 
     // ── hydrateIconPositions ──────────────────────────────────────────────
-    // Payload: the persisted id → grid-cell map. Dispatched once at desktop
-    // boot (useDesktopPersistence). Applies to icons already registered and
-    // is kept in savedPositions for icons that register afterwards.
-    hydrateIconPositions(state, action: PayloadAction<Record<string, GridCell>>) {
-      state.savedPositions = action.payload
-      Object.entries(action.payload).forEach(([id, position]) => {
+    // Payload: the persisted id → grid-cell map + the viewport row bound.
+    // Dispatched once at desktop boot (useDesktopPersistence). Applies to icons
+    // already registered and is kept in savedPositions for icons that register
+    // afterwards.
+    hydrateIconPositions(
+      state,
+      action: PayloadAction<{ positions: Record<string, GridCell>; maxRows: number }>
+    ) {
+      const { positions, maxRows } = action.payload
+      state.savedPositions = positions
+      Object.entries(positions).forEach(([id, position]) => {
         const icon = state.iconsById[id]
         if (!icon) {
           return
@@ -217,8 +206,8 @@ const desktopSlice = createSlice({
         // icon itself so a cell it already occupies stays put.
         const others = state.iconIds
           .filter((otherId) => otherId !== id)
-          .map((otherId) => state.iconsById[otherId])
-        icon.position = firstFreeCell(position, others, (other) => other.position)
+          .map((otherId) => state.iconsById[otherId].position)
+        icon.position = findNextFreeCell(position, others, maxRows)
       })
     },
   },
@@ -260,14 +249,6 @@ export const selectIconById =
   (state: RootState): DesktopIcon | undefined => {
     return state.desktop.iconsById[id]
   }
-
-// Category 2 — O(1) lookup, but resolved from selectedIconId. Returns a stored
-// reference (or undefined when nothing is selected) → plain function, NOT createSelector.
-export const selectSelectedIcon = (state: RootState): DesktopIcon | undefined => {
-  return state.desktop.selectedIconId
-    ? state.desktop.iconsById[state.desktop.selectedIconId]
-    : undefined
-}
 
 // Category 3 — derived array. ids.map allocates a NEW array every call → MUST
 // be memoized or every icon subscriber re-renders on unrelated dispatches.
