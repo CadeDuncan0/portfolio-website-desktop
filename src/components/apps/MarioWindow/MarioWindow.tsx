@@ -1,7 +1,7 @@
 'use client'
 
-import { WindowWrapper } from '../WindowWrapper'
 import styles from './MarioWindow.module.css'
+import { WindowWrapper } from '@/components/shell/WindowWrapper'
 import { assetPaths, withBasePath } from '@/lib/assetPaths'
 
 /** Default geometry for the game window — a comfortable 4:3-ish canvas for the
