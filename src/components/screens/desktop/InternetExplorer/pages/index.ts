@@ -1,6 +1,0 @@
-export { HomePage } from './HomePage'
-export { GettingStartedPage } from './GettingStartedPage'
-export { RedirectPage } from './RedirectPage'
-export { ResumePage } from './ResumePage'
-export { ProjectsPage } from './ProjectsPage'
-export { ProjectDetailPage } from './ProjectDetailPage'

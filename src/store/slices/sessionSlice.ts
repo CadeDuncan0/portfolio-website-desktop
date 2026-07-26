@@ -52,10 +52,6 @@ export default sessionSlice.reducer
 // ─── Selectors ──────────────────────────────────────────────────────────────
 // Every component reads through these — never through state.session.* directly.
 
-export const selectRole = (state: RootState): 'guest' | 'admin' | null => {
-  return state.session.role
-}
-
 export const selectAuthStatus = (state: RootState): AuthStatus => {
   return state.session.authStatus
 }
