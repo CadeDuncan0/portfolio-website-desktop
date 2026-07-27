@@ -5,9 +5,9 @@ import { clearSession } from '@/store/slices/sessionSlice'
 
 // ─── Constants ──────────────────────────────────────────────────────────────────
 
-const DEFAULT_WINDOW_SIZE = { width: 880, height: 640 }
+const DEFAULT_WINDOW_SIZE = { width: 900, height: 950 }
 const DEFAULT_WINDOW_POSITION = { x: 80, y: 80 }
-export const MIN_WINDOW_SIZE = { width: 240, height: 160 }
+export const MIN_WINDOW_SIZE = { width: 320, height: 200 }
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

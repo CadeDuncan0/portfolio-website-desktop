@@ -1,7 +1,7 @@
 'use client'
 
 import styles from './ProjectDetailPage.module.css'
-import type { PortfolioProject } from '@/content/projects'
+import type { PortfolioProject } from '@/config/projects'
 import { withBasePath } from '@/lib/assetPaths'
 import { launchApplication } from '@/lib/launchApplication'
 import { useAppDispatch } from '@/store/hooks'
@@ -20,8 +20,8 @@ export function ProjectDetailPage({ project, onNavigate }: ProjectDetailPageProp
   // Routed through the shared launch gate, so the demo button honours the same
   // disabled/role rules as the desktop icon and Start Menu shortcut. Title and
   // geometry come from the registry record.
-  const handlePlayMario = () => {
-    dispatch(launchApplication('mario'))
+  const launchDemoApplication = (appKey: string) => {
+    dispatch(launchApplication(appKey))
   }
 
   return (
@@ -35,7 +35,10 @@ export function ProjectDetailPage({ project, onNavigate }: ProjectDetailPageProp
           ← All Projects
         </button>
 
-        <div className={styles.hero} style={{ background: project.gradient }}>
+        <div
+          className={styles.hero}
+          style={project.image ? undefined : { background: project.gradient }}
+        >
           {project.image && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -64,13 +67,15 @@ export function ProjectDetailPage({ project, onNavigate }: ProjectDetailPageProp
           </p>
         ))}
 
-        {project.demo?.type === 'note' && <p className={styles.demoNote}>{project.demo.text}</p>}
+        {project.note && <p className={styles.demoNote}>{project.note}</p>}
 
         {(project.links.length > 0) && (
           <div className={styles.actions}>
-              <button type="button" className={styles.demoButton} onClick={handlePlayMario}>
-                ▶ Play it now — opens in its own window
-              </button>
+            {(project.demo) && (
+              <button type="button" className={styles.demoButton} onClick={() => launchDemoApplication(project.demo!.appKey)}>
+                {project.demo!.label ?? "View Project ↗"}
+              </button> 
+            )}
             {project.links.map((link) => (
               <a
                 key={link.url}

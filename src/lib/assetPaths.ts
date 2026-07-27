@@ -45,8 +45,9 @@ export const assetPaths = {
   },
   /** Project screenshots shown on the IE /projects pages. */
   projects: {
-    win7WebOs: `${ASSETS}/projects/win7-web-os.png`,
-    superMarioBros: `${ASSETS}/projects/super-mario-bros.png`,
+    win7WebOs: `${ASSETS}/projects/win7-banner.png`,
+    superMarioBros: `${ASSETS}/projects/mario-banner.png`,
+    stardew: `${ASSETS}/projects/stardew-banner.png`,
   },
   /** Start orb. Mirrored by hand in globals.css `--tb-orb-img`. */
   taskbar: {

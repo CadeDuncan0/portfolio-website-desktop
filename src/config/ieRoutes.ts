@@ -1,4 +1,4 @@
-import { PORTFOLIO_PROJECTS } from '@/content/projects'
+import { getPortfolioProjects } from '@/config/projects'
 
 /**
  * Internet Explorer route registry.
@@ -18,7 +18,6 @@ import { PORTFOLIO_PROJECTS } from '@/content/projects'
 import { createElement, type ComponentType } from 'react'
 
 import {
-  GettingStartedPage,
   HomePage,
   ProjectDetailPage,
   ProjectsPage,
@@ -50,7 +49,7 @@ const SITE = 'www.cadeduncan.com'
 /** One in-app page per portfolio project — /projects/<slug> subpages. Each
  *  entry closes over its own project, so the IE window renders these through
  *  the same generic `page.component` path as every other route. */
-const PROJECT_SUBPAGES: IEPage[] = PORTFOLIO_PROJECTS.map((project) => ({
+const PROJECT_SUBPAGES: IEPage[] = getPortfolioProjects().map((project) => ({
   nickname: `about:projects/${project.slug}`,
   url: `${SITE}/projects/${project.slug}`,
   title: project.title,
@@ -82,16 +81,23 @@ export const IE_PAGES: IEPage[] = [
   },
   ...PROJECT_SUBPAGES,
   {
-    nickname: 'about:getting-started',
-    url: `${SITE}/getting-started`,
-    title: 'Getting Started',
-    redirect: false,
-    component: GettingStartedPage,
-  },
-  {
-    nickname: 'about:source-code',
+    nickname: 'links:source-code',
     url: `https://github.com/CadeDuncan0/portfolio-website-desktop`,
     title: 'Source Code',
+    redirect: true,
+    disabled: false,
+  },
+  {
+    nickname: 'links:win7-source-code',
+    url: `https://github.com/CadeDuncan0/win7-web-os`,
+    title: 'Win7 Source Code',
+    redirect: true,
+    disabled: false,
+  },
+  {
+    nickname: 'links:changelog',
+    url: `https://github.com/CadeDuncan0/win7-web-os`,
+    title: 'Changelog',
     redirect: true,
     disabled: false,
   },

@@ -1,7 +1,7 @@
 'use client'
 
 import styles from './ProjectsPage.module.css'
-import { PORTFOLIO_PROJECTS } from '@/content/projects'
+import { getPortfolioProjects } from '@/config/projects'
 import { withBasePath } from '@/lib/assetPaths'
 
 interface ProjectsPageProps {
@@ -17,14 +17,17 @@ export function ProjectsPage({ onNavigate }: ProjectsPageProps) {
       <h1 className={styles.heading}>Projects</h1>
       <p className={styles.subtitle}>Select a project for details, links, and demos.</p>
       <div className={styles.grid}>
-        {PORTFOLIO_PROJECTS.map((project) => (
+        {getPortfolioProjects().map((project) => (
           <button
             key={project.slug}
             type="button"
             className={styles.card}
             onClick={() => onNavigate(`about:projects/${project.slug}`)}
           >
-            <span className={styles.thumb} style={{ background: project.gradient }}>
+            <span
+              className={styles.thumb}
+              style={project.image ? undefined : { background: project.gradient }}
+            >
               {project.image && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

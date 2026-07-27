@@ -22,10 +22,10 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--space-4);
   width: 100%;
-  max-width: 720px;
+  max-width: 1040px;
 }
 
 .card {
@@ -45,17 +45,20 @@
   background: var(--ie-favbar-link-hover-bg);
 }
 
+/* Banners are wide title cards framed edge-to-edge, so they are matted rather
+   than cropped — even a 1% crop clips the artwork's own outer frame. */
 .thumb {
   display: block;
-  height: 110px;
+  /* Clears the flex item's content-based min-height, which would otherwise let
+     a taller banner stretch the thumb past its ratio and misalign the row. */
+  min-height: 0;
   background: var(--ie-project-thumb-bg);
 }
 
 .thumbImage {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top;
+  object-fit: contain;
   display: block;
 }
 
@@ -81,6 +84,7 @@
   font-size: var(--ie-pagelinks-font-size);
   line-height: 1.4;
   color: var(--ie-address-text);
+  min-height: 33.6px;
 }
 
 .tagRow {

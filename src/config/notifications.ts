@@ -9,6 +9,7 @@
  * offers "Remove notification", which retires the icon for the session.
  */
 import type { WindowKey } from './applications'
+import { assetPaths } from '@/lib/assetPaths'
 
 export interface NotificationDefinition {
   /** Stable id — also dedupes seeding, so each notification exists once. */
@@ -26,14 +27,18 @@ export interface NotificationDefinition {
 
 export const NOTIFICATIONS: NotificationDefinition[] = [
   {
-    // Points at Projects rather than Welcome so the action works in both
-    // sessions — Welcome and Getting Started are hideForAdmin, and the launch
-    // gate refuses an app hidden from the current role.
     id: 'welcome',
     title: 'Welcome to my desktop',
     message:
-      "You're on a Windows 7 desktop running in your browser. Double-click an icon to explore, or start with my projects.",
-    action: { label: 'Open Projects', appKey: 'projects' },
+      'Explore a nostalgic Windows 7 desktop experience, recreated to run entirely in your browser.',
+    action: { label: 'Make one for yourself!', appKey: 'win7-source-code' },
+  },
+  {
+    id: 'version-1-0-0',
+    title: 'Version 1.0.0 Released! 🎉',
+    message: 'The first major release is here! See what made it into v1.0.0.',
+    iconSrc: assetPaths.systemIcons.windowsFlag,
+    action: { label: 'Changelog', appKey: 'changelog' },
   },
 ]
 

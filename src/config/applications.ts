@@ -4,7 +4,6 @@
 import { internetExplorerApp } from '@/components/apps/InternetExplorer'
 import { marioApp, MARIO_WINDOW_SIZE } from '@/components/apps/MarioWindow'
 import type { WindowApp } from '@/components/apps/types'
-import { welcomeApp } from '@/components/apps/WelcomeWindow'
 import { assetPaths } from '@/lib/assetPaths'
 import type { WindowKind } from '@/store/slices/windowSlice'
 
@@ -31,32 +30,13 @@ export const APPLICATIONS = [
     iconSrc: assetPaths.desktopIcons.internetExplorer,
   },
   {
-    // Desktop-only: the tour has never had a Start Menu shortcut, and admin
-    // sessions skip it entirely.
-    key: 'welcome',
-    title: 'Welcome',
-    component: welcomeApp,
-    iconSrc: assetPaths.desktopIcons.folderWithDocuments,
-    startMenuShortcut: false,
-    hideForAdmin: true,
-  },
-  {
-    key: 'getting-started',
-    title: 'Getting Started',
-    component: internetExplorerApp,
-    iconSrc: assetPaths.desktopIcons.folderWithDocuments,
-    ieRoute: 'about:getting-started',
-    hideForAdmin: true,
-  },
-  {
     // Portfolio content reachable from the Start Menu only — no desktop icon.
     key: 'resume',
     title: 'Resume',
     component: internetExplorerApp,
     iconSrc: assetPaths.desktopIcons.resume,
     ieRoute: 'about:resume',
-    desktopIcon: false,
-    startMenuShortcut: true,
+    hideForAdmin: true,
     startMenuColumn: 'left',
   },
   {
@@ -65,8 +45,7 @@ export const APPLICATIONS = [
     component: internetExplorerApp,
     iconSrc: assetPaths.desktopIcons.projects,
     ieRoute: 'about:projects',
-    desktopIcon: false,
-    startMenuShortcut: true,
+    hideForAdmin: true,
     startMenuColumn: 'left',
   },
   {
@@ -77,15 +56,26 @@ export const APPLICATIONS = [
     defaultSize: MARIO_WINDOW_SIZE,
   },
   {
-    // Windowless application (no `component`): an external link. Launching it opens
-    // the GitHub repository in a new tab through the same gate as every other
-    // launcher; the destination URL lives on the 'about:source-code' redirect
-    // entry in ieRoutes.ts, and disabling either side retires it everywhere.
     key: 'source-code',
     title: 'Source Code',
+    ieRoute: 'links:source-code',
     desktopIcon: false,
     startMenuColumn: 'right',
-    ieRoute: 'about:source-code',
+  },
+  {
+    key: 'win7-source-code',
+    title: 'Win7 Source Code',
+    ieRoute: 'links:win7-source-code',
+    desktopIcon: false,
+    startMenuShortcut: true,
+    startMenuColumn: 'right',
+  },
+  {
+    key: 'changelog',
+    title: 'Changelog',
+    ieRoute: 'links:changelog',
+    desktopIcon: false,
+    startMenuShortcut: false,
   },
 ] as const satisfies readonly Application[]
 
