@@ -3,7 +3,7 @@
 import styles from './HomePage.module.css'
 import portal from './IEPortal.module.css'
 import { IESidebar } from './IESidebar'
-import { DEFAULT_ROUTE, IE_TOP_PAGES } from '@/config/ieRoutes'
+import { pagesByTag } from '@/config/ieRoutes'
 
 interface HomePageProps {
   onNavigate: (nickname: string) => void
@@ -20,9 +20,9 @@ const TILE_BLURB: Record<string, string> = {
 
 export function HomePage({ onNavigate, onOpentab }: HomePageProps) {
   // Computed in-body, not at module load: ieRoutes imports this page for its
-  // registry `component`, so reading IE_TOP_PAGES at import time would hit the
+  // registry `component`, so reading IE_QUICK_LINKS at import time would hit the
   // circular-init temporal dead zone.
-  const featurePages = IE_TOP_PAGES.filter((page) => page.nickname !== DEFAULT_ROUTE)
+  const getStartedPages = pagesByTag('get-started')
   return (
     <div className={portal.pageShell}>
       <header className={portal.headerBand}>
@@ -32,29 +32,31 @@ export function HomePage({ onNavigate, onOpentab }: HomePageProps) {
 
       <div className={portal.columns}>
         <div className={portal.main}>
-          <section className={portal.module}>
-            <div className={portal.moduleHeader}>Get started on the Web</div>
-            <div className={portal.moduleBody}>
-              <p className={styles.lede}>
-                Pick a page below to explore this desktop, or use the links along the left.
-              </p>
-              <div className={styles.tiles}>
-                {featurePages.map((page) => (
-                  <button
-                    key={page.nickname}
-                    className={styles.tile}
-                    onClick={() => (page.redirect ? onOpentab : onNavigate)(page.nickname)}
-                    type="button"
-                  >
-                    <span className={styles.tileTitle}>{page.title}</span>
-                    <span className={styles.tileDesc}>
-                      {TILE_BLURB[page.nickname] ?? 'Open this page.'}
-                    </span>
-                  </button>
-                ))}
+          {getStartedPages && (
+            <section className={portal.module}>
+              <div className={portal.moduleHeader}>Get started on the Web</div>
+              <div className={portal.moduleBody}>
+                <p className={styles.lede}>
+                  Pick a page below to explore this desktop, or use the links along the left.
+                </p>
+                <div className={styles.tiles}>
+                  {getStartedPages.map((page) => (
+                    <button
+                      key={page.nickname}
+                      className={styles.tile}
+                      onClick={() => (page.redirect ? onOpentab : onNavigate)(page.nickname)}
+                      type="button"
+                    >
+                      <span className={styles.tileTitle}>{page.title}</span>
+                      <span className={styles.tileDesc}>
+                        {TILE_BLURB[page.nickname] ?? 'Open this page.'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
         </div>
 
         <IESidebar onNavigate={onNavigate} onOpentab={onOpentab} />

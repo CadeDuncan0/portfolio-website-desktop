@@ -1,12 +1,12 @@
 'use client'
 
-import { IEPageLinks } from './IEPageLinks'
+import { IEBookmarks } from './IEBookmarks'
 import { IEToolbar } from './IEToolbar'
 import styles from './InternetExplorerWindow.module.css'
 import { NotFoundPage, RedirectPage } from './pages'
 import { useIENavigation } from './useIENavigation'
 import { WindowWrapper } from '@/components/shell/WindowWrapper'
-import { DEFAULT_ROUTE, resolvePage } from '@/config/ieRoutes'
+import { DEFAULT_ROUTE, IE_BOOKMARKS, resolvePage } from '@/config/ieRoutes'
 import { assetPaths, withBasePath } from '@/lib/assetPaths'
 
 export interface InternetExplorerWindowProps {
@@ -91,7 +91,7 @@ export function InternetExplorerWindow({ windowId, initialRoute }: InternetExplo
           </div>
           <div className={styles.tabStub} />
         </div>
-        <IEPageLinks onNavigate={nav.navigate} onOpentab={handleOpentab} />
+        {IE_BOOKMARKS && <IEBookmarks onNavigate={nav.navigate} onOpentab={handleOpentab} />}
         {/* reloadKey changes on navigation and refresh, remounting the page so a
             refresh re-runs it without adding a history entry. */}
         <div key={nav.reloadKey} className={styles.content}>
