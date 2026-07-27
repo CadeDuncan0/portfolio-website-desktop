@@ -3,6 +3,7 @@
 import { IEAddressBar } from './IEAddressBar'
 import styles from './IEToolbar.module.css'
 import { ArrowButton } from '@/components/ui/ArrowButton'
+import { IE_BOOKMARKS } from '@/config/ieRoutes'
 
 interface IEToolbarProps {
   currentUrl: string
@@ -44,12 +45,14 @@ export function IEToolbar({
         />
       </div>
 
-      <IEAddressBar
-        currentUrl={currentUrl}
-        onOpentab={onOpentab}
-        onNavigate={onNavigate}
-        onRefresh={onRefresh}
-      />
+      {IE_BOOKMARKS && (
+        <IEAddressBar
+          currentUrl={currentUrl}
+          onOpentab={onOpentab}
+          onNavigate={onNavigate}
+          onRefresh={onRefresh}
+        />
+      )}
     </div>
   )
 }

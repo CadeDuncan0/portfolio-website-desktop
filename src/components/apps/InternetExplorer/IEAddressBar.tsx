@@ -3,13 +3,7 @@
 import { useId, useRef, useState } from 'react'
 
 import styles from './IEToolbar.module.css'
-import {
-  filterPages,
-  IE_ENABLED_PAGES,
-  inputToRoute,
-  pageUrl,
-  resolvePage,
-} from '@/config/ieRoutes'
+import { filterPages, IE_ADDRESSES, inputToRoute, pageUrl, resolvePage } from '@/config/ieRoutes'
 import { assetPaths, withBasePath } from '@/lib/assetPaths'
 
 interface IEAddressBarProps {
@@ -43,7 +37,7 @@ export function IEAddressBar({ currentUrl, onOpentab, onNavigate, onRefresh }: I
 
   const displayUrl = pageUrl(currentUrl)
   const inputValue = editing ? query : displayUrl
-  const results = dirty ? filterPages(query) : IE_ENABLED_PAGES
+  const results = dirty ? filterPages(query) : IE_ADDRESSES
 
   function openWithSelection() {
     if (pendingClear.current) {

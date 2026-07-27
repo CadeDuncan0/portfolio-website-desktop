@@ -1,20 +1,3 @@
-import { getPortfolioProjects } from '@/config/projects'
-
-/**
- * Internet Explorer route registry.
- *
- * Two kinds of entries live here, distinguished by the `redirect` flag:
- *
- * - **Pages** (`redirect: false`) — in-app browser pages rendered inside the IE
- *   window. Each page has a short `nickname` (the value stored in the navigation
- *   history stack and the alias a user can type, e.g. `about:home`), a full
- *   `url` shown in the address bar, and a condensed `title` used in the address
- *   dropdown and the page-links row (`Home`).
- * - **Redirects** (`redirect: true`) — external destinations. Selecting one
- *   opens its real `url` in a new browser tab (via `onOpentab`) while IE itself
- *   navigates to an in-app redirect page (spinner + manual fallback link).
- */
-
 import { createElement, type ComponentType } from 'react'
 
 import {
@@ -23,6 +6,7 @@ import {
   ProjectsPage,
   ResumePage,
 } from '@/components/apps/InternetExplorer/pages'
+import { getPortfolioProjects } from '@/config/projects'
 
 /** Props every in-app IE page component receives from the IE window. */
 export interface IEPageProps {
@@ -36,12 +20,13 @@ export interface IEPage {
   nickname: string // id
   url: string
   title: string // search dropdown label
-  /** In-app page renderer. Carrying the component here makes this registry the
-   *  single place a route is defined (redirect entries omit it and render the
-   *  shared redirect page). */
   component?: ComponentType<IEPageProps>
-  redirect?: boolean // opens in new tab
-  disabled?: boolean
+  redirect?: boolean // when true, does not require a component
+  disabled?: boolean // unaccessible
+  hidden?: boolean // accessible but hidden in IE
+  bookmark?: boolean
+  addressbar?: boolean
+  tags?: string[]
 }
 
 const SITE = 'www.cadeduncan.com'
@@ -49,70 +34,66 @@ const SITE = 'www.cadeduncan.com'
 /** One in-app page per portfolio project — /projects/<slug> subpages. Each
  *  entry closes over its own project, so the IE window renders these through
  *  the same generic `page.component` path as every other route. */
-const PROJECT_SUBPAGES: IEPage[] = getPortfolioProjects().map((project) => ({
-  nickname: `about:projects/${project.slug}`,
-  url: `${SITE}/projects/${project.slug}`,
-  title: project.title,
-  redirect: false,
-  component: (props: IEPageProps) => createElement(ProjectDetailPage, { ...props, project }),
-}))
+const PROJECT_SUBPAGES: IEPage[] = getPortfolioProjects().map((project) =>
+  createPage({
+    nickname: `about:projects/${project.slug}`,
+    url: `${SITE}/projects/${project.slug}`,
+    title: project.title,
+    redirect: false,
+    component: (props: IEPageProps) => createElement(ProjectDetailPage, { ...props, project }),
+  })
+)
 
 export const IE_PAGES: IEPage[] = [
-  {
+  createPage({
     nickname: 'about:home',
     url: `${SITE}/home`,
     title: 'Home',
     redirect: false,
     component: HomePage,
-  },
-  {
+  }),
+  createPage({
     nickname: 'about:resume',
     url: `${SITE}/resume`,
     title: 'Resume',
     redirect: false,
     component: ResumePage,
-  },
-  {
+  }),
+  createPage({
     nickname: 'about:projects',
     url: `${SITE}/projects`,
     title: 'Projects',
     redirect: false,
     component: ProjectsPage,
-  },
+  }),
   ...PROJECT_SUBPAGES,
-  {
+  createPage({
     nickname: 'links:source-code',
     url: `https://github.com/CadeDuncan0/portfolio-website-desktop`,
     title: 'Source Code',
     redirect: true,
     disabled: false,
-  },
-  {
+  }),
+  createPage({
     nickname: 'links:win7-source-code',
     url: `https://github.com/CadeDuncan0/win7-web-os`,
     title: 'Win7 Source Code',
     redirect: true,
     disabled: false,
-  },
-  {
+  }),
+  createPage({
     nickname: 'links:changelog',
     url: `https://github.com/CadeDuncan0/win7-web-os`,
     title: 'Changelog',
     redirect: true,
     disabled: false,
-  },
+  }),
 ]
 
-/** Pages a user can actually reach — disabled routes are filtered out once here
- *  so every downstream lookup (resolver, links, tiles, address bar) excludes
- *  them and a disabled route can never be navigated to or rendered. */
 export const IE_ENABLED_PAGES: IEPage[] = IE_PAGES.filter((page) => !page.disabled)
-
-/** Top-level enabled pages only — nested nicknames (subpages, e.g.
- *  `about:projects/…`) stay out of the page-links row and the Home tiles. */
-export const IE_TOP_PAGES: IEPage[] = IE_ENABLED_PAGES.filter(
-  (page) => !page.nickname.includes('/')
-)
+export const IE_LISTED_PAGES: IEPage[] = IE_ENABLED_PAGES.filter((page) => !page.hidden)
+export const IE_ADDRESSES: IEPage[] = IE_LISTED_PAGES.filter((page) => page.addressbar)
+export const IE_BOOKMARKS: IEPage[] = IE_LISTED_PAGES.filter((page) => page.bookmark)
 
 /** The page IE opens on by default (its nickname). */
 export const DEFAULT_ROUTE = IE_ENABLED_PAGES[0].nickname
@@ -120,6 +101,14 @@ export const DEFAULT_ROUTE = IE_ENABLED_PAGES[0].nickname
 const PAGES_BY_NICKNAME: Record<string, IEPage> = Object.fromEntries(
   IE_ENABLED_PAGES.map((page) => [page.nickname, page])
 )
+
+/** Assigns addressbar to provided page */
+export function createPage(page: IEPage): IEPage {
+  return {
+    addressbar: (!page.disabled && !page.hidden) ?? false,
+    ...page,
+  }
+}
 
 /** Resolve a nickname (history-stack value) to its page, if any. */
 export function resolvePage(nickname: string): IEPage | undefined {
@@ -131,14 +120,19 @@ export function pageUrl(nickname: string): string {
   return resolvePage(nickname)?.url ?? nickname
 }
 
+/** Link-visible pages carrying `tag`, subpages included — for custom sections. */
+export function pagesByTag(tag: string): IEPage[] {
+  return IE_LISTED_PAGES.filter((page) => page.tags?.includes(tag))
+}
+
 /** Filter pages for the address-bar dropdown. */
 export function filterPages(query: string): IEPage[] {
   const q = query.trim().toLowerCase()
   // list all pages
   if (!q) {
-    return IE_ENABLED_PAGES
+    return IE_LISTED_PAGES
   }
-  return IE_ENABLED_PAGES.filter(
+  return IE_LISTED_PAGES.filter(
     (page) =>
       page.title.toLowerCase().includes(q) ||
       page.url.toLowerCase().includes(q) ||
@@ -150,7 +144,8 @@ export function filterPages(query: string): IEPage[] {
  * Resolve free-typed address-bar input to a nickname to navigate to. Accepts an
  * exact nickname, an exact full URL, or a case-insensitive title; otherwise
  * returns the first page whose title/url/nickname contains the query, or
- * `undefined` when nothing matches.
+ * `undefined` when nothing matches. Exact input matches a `hidden` page too —
+ * that is the address a fork hands out for an unlisted route.
  */
 export function inputToRoute(input: string): string | undefined {
   const raw = input.trim()
