@@ -28,26 +28,17 @@ export interface NotificationDefinition {
 export const NOTIFICATIONS: NotificationDefinition[] = [
   {
     id: 'welcome',
-    title: 'Welcome to win7-web-os!',
+    title: 'Welcome to Win7 Web OS',
     message:
-      'You are on a Windows 7 desktop running in your browser. Double-click an icon to explore.',
-    action: { label: 'Take the tour', appKey: 'welcome' },
+      'Explore a nostalgic Windows 7 desktop experience, recreated to run entirely in your browser.',
+    action: { label: 'Create your own', appKey: 'source-code' },
   },
   {
-    id: 'version-1-4',
-    title: 'Version 1.4 released!',
-    message:
-      'Applications registry, right-click menus, tray notifications, and a Show Desktop button.',
+    id: 'version-1-4-1',
+    title: 'Version 1.4.1 released!',
+    message: 'Added new Internet Explorer customizations.',
     iconSrc: assetPaths.systemIcons.windowsFlag,
-    action: { label: 'Getting Started guide', appKey: 'getting-started' },
-  },
-  {
-    // Example fork announcement — flip `disabled` to false to use it.
-    id: 'fork-tip',
-    title: 'Make it yours',
-    message: 'Fork the template and edit applications.ts to put your own apps on this desktop.',
-    action: { label: 'Getting Started guide', appKey: 'getting-started' },
-    disabled: true,
+    action: { label: 'See all changes', appKey: 'source-code' },
   },
 ]
 
