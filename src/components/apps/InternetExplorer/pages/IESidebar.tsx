@@ -1,7 +1,7 @@
 'use client'
 
 import portal from './IEPortal.module.css'
-import { pagesByTag } from '@/config/ieRoutes'
+import { pagesByTag, resolvePage } from '@/config/ieRoutes'
 
 interface IESidebarProps {
   onNavigate: (nickname: string) => void
@@ -17,6 +17,7 @@ interface IESidebarProps {
  */
 export function IESidebar({ onNavigate, onOpentab }: IESidebarProps) {
   const explorePages = pagesByTag('explore')
+  const win7SourceCodePage = resolvePage('links:win7-source-code')
   return (
     <nav className={portal.sidebar} aria-label="Explore">
       <section className={portal.sideBox}>
@@ -34,7 +35,13 @@ export function IESidebar({ onNavigate, onOpentab }: IESidebarProps) {
 
       <section className={portal.sideBox}>
         <div className={portal.sideBoxTitle}>Did you know?</div>
-        <p className={portal.sideText}>This whole desktop is an open, forkable template — clone it and swap in your own icons, pages, and apps.</p>
+        <p className={portal.sideText}>
+          This whole desktop is built on an open, forkable template —{' '}
+          <a href={win7SourceCodePage?.url} target="_blank">
+            clone it{' '}
+          </a>
+          and swap in your own icons, pages, and apps.
+        </p>
       </section>
     </nav>
   )
