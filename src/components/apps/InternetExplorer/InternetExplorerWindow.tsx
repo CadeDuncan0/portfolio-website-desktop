@@ -6,7 +6,7 @@ import styles from './InternetExplorerWindow.module.css'
 import { NotFoundPage, RedirectPage } from './pages'
 import { useIENavigation } from './useIENavigation'
 import { WindowWrapper } from '@/components/shell/WindowWrapper'
-import { DEFAULT_ROUTE, IE_BOOKMARKS, resolvePage } from '@/config/ieRoutes'
+import { DEFAULT_ROUTE, resolvePage } from '@/config/ieRoutes'
 import { assetPaths, withBasePath } from '@/lib/assetPaths'
 
 export interface InternetExplorerWindowProps {
@@ -62,12 +62,7 @@ export function InternetExplorerWindow({ windowId, initialRoute }: InternetExplo
 
   const icon = (
     // eslint-disable-next-line @next/next/no-img-element
-    <img
-      className={styles.titleBarIcon}
-      src={withBasePath(assetPaths.desktopIcons.internetExplorer)}
-      alt=""
-      aria-hidden="true"
-    />
+    <img className={styles.titleBarIcon} src={withBasePath(assetPaths.desktopIcons.internetExplorer)} alt="" aria-hidden="true" />
   )
 
   const currentPage = resolvePage(nav.currentUrl)
@@ -82,16 +77,12 @@ export function InternetExplorerWindow({ windowId, initialRoute }: InternetExplo
           <span className={styles.favStar}>★</span>
           <div className={styles.tab}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={styles.tabFavicon}
-              src={withBasePath(assetPaths.desktopIcons.internetExplorer)}
-              alt=""
-            />
+            <img className={styles.tabFavicon} src={withBasePath(assetPaths.desktopIcons.internetExplorer)} alt="" />
             <span className={styles.tabTitle}>{currentPage?.title ?? nav.currentUrl}</span>
           </div>
           <div className={styles.tabStub} />
         </div>
-        {IE_BOOKMARKS && <IEBookmarks onNavigate={nav.navigate} onOpentab={handleOpentab} />}
+        <IEBookmarks onNavigate={nav.navigate} onOpentab={handleOpentab} />
         {/* reloadKey changes on navigation and refresh, remounting the page so a
             refresh re-runs it without adding a history entry. */}
         <div key={nav.reloadKey} className={styles.content}>

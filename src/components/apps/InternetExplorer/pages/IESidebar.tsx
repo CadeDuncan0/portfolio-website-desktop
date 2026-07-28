@@ -19,31 +19,22 @@ export function IESidebar({ onNavigate, onOpentab }: IESidebarProps) {
   const explorePages = pagesByTag('explore')
   return (
     <nav className={portal.sidebar} aria-label="Explore">
-      {explorePages && (
-        <section className={portal.sideBox}>
-          <div className={portal.sideBoxTitle}>Explore</div>
-          <ul className={portal.sideList}>
-            {explorePages.map((page) => (
-              <li key={page.nickname}>
-                <button
-                  className={portal.sideLink}
-                  onClick={() => (page.redirect ? onOpentab : onNavigate)(page.nickname)}
-                  type="button"
-                >
-                  {page.title}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <section className={portal.sideBox}>
+        <div className={portal.sideBoxTitle}>Explore</div>
+        <ul className={portal.sideList}>
+          {explorePages.map((page) => (
+            <li key={page.nickname}>
+              <button className={portal.sideLink} onClick={() => (page.redirect ? onOpentab : onNavigate)(page.nickname)} type="button">
+                {page.title}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className={portal.sideBox}>
         <div className={portal.sideBoxTitle}>Did you know?</div>
-        <p className={portal.sideText}>
-          This whole desktop is an open, forkable template — clone it and swap in your own icons,
-          pages, and apps.
-        </p>
+        <p className={portal.sideText}>This whole desktop is an open, forkable template — clone it and swap in your own icons, pages, and apps.</p>
       </section>
     </nav>
   )

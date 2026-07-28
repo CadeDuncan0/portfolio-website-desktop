@@ -1,11 +1,6 @@
 import { createElement, type ComponentType } from 'react'
 
-import {
-  HomePage,
-  ProjectDetailPage,
-  ProjectsPage,
-  ResumePage,
-} from '@/components/apps/InternetExplorer/pages'
+import { HomePage, ProjectDetailPage, ProjectsPage, ResumePage } from '@/components/apps/InternetExplorer/pages'
 import { getPortfolioProjects } from '@/config/projects'
 
 /** Props every in-app IE page component receives from the IE window. */
@@ -50,6 +45,7 @@ export const IE_PAGES: IEPage[] = [
     url: `${SITE}/home`,
     title: 'Home',
     redirect: false,
+    bookmark: true,
     component: HomePage,
   }),
   createPage({
@@ -57,14 +53,18 @@ export const IE_PAGES: IEPage[] = [
     url: `${SITE}/resume`,
     title: 'Resume',
     redirect: false,
+    bookmark: true,
     component: ResumePage,
+    tags: ['get-started'],
   }),
   createPage({
     nickname: 'about:projects',
     url: `${SITE}/projects`,
     title: 'Projects',
     redirect: false,
+    bookmark: true,
     component: ProjectsPage,
+    tags: ['get-started'],
   }),
   ...PROJECT_SUBPAGES,
   createPage({
@@ -73,6 +73,7 @@ export const IE_PAGES: IEPage[] = [
     title: 'Source Code',
     redirect: true,
     disabled: false,
+    tags: ['explore'],
   }),
   createPage({
     nickname: 'links:win7-source-code',
@@ -80,13 +81,15 @@ export const IE_PAGES: IEPage[] = [
     title: 'Win7 Source Code',
     redirect: true,
     disabled: false,
+    tags: ['explore'],
   }),
   createPage({
     nickname: 'links:changelog',
-    url: `https://github.com/CadeDuncan0/win7-web-os`,
+    url: `https://github.com/CadeDuncan0/portfolio-website-desktop/releases/latest`,
     title: 'Changelog',
     redirect: true,
     disabled: false,
+    tags: ['explore'],
   }),
 ]
 
@@ -98,14 +101,12 @@ export const IE_BOOKMARKS: IEPage[] = IE_LISTED_PAGES.filter((page) => page.book
 /** The page IE opens on by default (its nickname). */
 export const DEFAULT_ROUTE = IE_ENABLED_PAGES[0].nickname
 
-const PAGES_BY_NICKNAME: Record<string, IEPage> = Object.fromEntries(
-  IE_ENABLED_PAGES.map((page) => [page.nickname, page])
-)
+const PAGES_BY_NICKNAME: Record<string, IEPage> = Object.fromEntries(IE_ENABLED_PAGES.map((page) => [page.nickname, page]))
 
 /** Assigns addressbar to provided page */
 export function createPage(page: IEPage): IEPage {
   return {
-    addressbar: (!page.disabled && !page.hidden) ?? false,
+    addressbar: page.addressbar ?? (!page.disabled && !page.hidden),
     ...page,
   }
 }
@@ -133,10 +134,7 @@ export function filterPages(query: string): IEPage[] {
     return IE_LISTED_PAGES
   }
   return IE_LISTED_PAGES.filter(
-    (page) =>
-      page.title.toLowerCase().includes(q) ||
-      page.url.toLowerCase().includes(q) ||
-      page.nickname.toLowerCase().includes(q)
+    (page) => page.title.toLowerCase().includes(q) || page.url.toLowerCase().includes(q) || page.nickname.toLowerCase().includes(q)
   )
 }
 
@@ -156,9 +154,7 @@ export function inputToRoute(input: string): string | undefined {
     return raw
   }
   const lower = raw.toLowerCase()
-  const exact = IE_ENABLED_PAGES.find(
-    (page) => page.url.toLowerCase() === lower || page.title.toLowerCase() === lower
-  )
+  const exact = IE_ADDRESSES.find((page) => page.url.toLowerCase() === lower || page.title.toLowerCase() === lower)
   if (exact) {
     return exact.nickname
   }
