@@ -1,21 +1,44 @@
-MIT License
+Copyright (c) 2026 Cade Duncan. All rights reserved.
 
-Copyright (c) 2026 Cade Duncan
+This repository is published for demonstration and review purposes only. It is
+not open source. No license is granted to use, copy, modify, merge, publish,
+distribute, sublicense, or sell any part of it, or to create derivative works
+from it.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+You may view and read the source code. Any other use requires prior written
+permission from the copyright holder.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This restriction applies with particular force to the personal content in this
+repository — the resume PDF in public/documents, the project write-ups in
+src/config/projects.ts, and the accompanying images. That material is personal
+to the copyright holder and may not be reproduced or repurposed under any
+circumstance.
+
+The reusable Windows 7 desktop engine on which this site is built is published
+separately, by the same author, under the MIT License:
+https://github.com/CadeDuncan0/win7-web-os. That project — not this one — is
+the one to fork, and its MIT terms are unaffected by this notice.
+
+THIRD-PARTY COMPONENTS
+
+Third-party material retains its own licensing and is not covered by the
+restriction above:
+
+- Node package dependencies are licensed by their respective authors under the
+  terms shipped with each package; none are redistributed in this repository.
+- public/mario/ contains a WebAssembly export of a Godot Engine project. Godot
+  Engine is Copyright (c) 2014-present Godot Engine contributors and Copyright
+  (c) 2007-2014 Juan Linietsky, Ariel Manzur, and is licensed under the MIT
+  License. Super Mario Bros. and its characters are trademarks of Nintendo; the
+  recreation is a non-commercial fan project with no affiliation with or
+  endorsement by Nintendo.
+
+DISCLAIMER
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
