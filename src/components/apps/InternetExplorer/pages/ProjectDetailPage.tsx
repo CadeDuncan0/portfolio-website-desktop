@@ -27,29 +27,21 @@ export function ProjectDetailPage({ project, onNavigate }: ProjectDetailPageProp
   return (
     <div className={styles.detailPage}>
       <div className={styles.inner}>
-        <button
-          type="button"
-          className={styles.backLink}
-          onClick={() => onNavigate('about:projects')}
-        >
+        <button type="button" className={styles.backLink} onClick={() => onNavigate('about:projects')}>
           ← All Projects
         </button>
 
-        <div
-          className={styles.hero}
-          style={project.image ? undefined : { background: project.gradient }}
-        >
+        <div className={styles.hero} style={project.image ? undefined : { background: project.gradient }}>
           {project.image && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              className={styles.heroImage}
-              src={withBasePath(project.image)}
-              alt={`${project.title} screenshot`}
-            />
+            <img className={styles.heroImage} src={withBasePath(project.image)} alt={`${project.title} screenshot`} />
           )}
         </div>
 
-        <h1 className={styles.heading}>{project.title}</h1>
+        <div className={styles.titleRow}>
+          <h1 className={styles.heading}>{project.title}</h1>
+          <span className={styles.yearBadge}>{project.yearStarted}</span>
+        </div>
         <p className={styles.context}>{project.context}</p>
 
         <div className={styles.tagRow}>
@@ -69,26 +61,18 @@ export function ProjectDetailPage({ project, onNavigate }: ProjectDetailPageProp
 
         {project.note && <p className={styles.demoNote}>{project.note}</p>}
 
-        {(project.links.length > 0) && (
-          <div className={styles.actions}>
-            {(project.demo) && (
-              <button type="button" className={styles.demoButton} onClick={() => launchDemoApplication(project.demo!.appKey)}>
-                {project.demo!.label ?? "View Project ↗"}
-              </button> 
-            )}
-            {project.links.map((link) => (
-              <a
-                key={link.url}
-                className={styles.externalLink}
-                href={link.url}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                {link.label} ↗
-              </a>
-            ))}
-          </div>
-        )}
+        <div className={styles.actions}>
+          {project.demo && (
+            <button type="button" className={styles.demoButton} onClick={() => launchDemoApplication(project.demo!.appKey)}>
+              {project.demo!.label ?? 'View Project ↗'}
+            </button>
+          )}
+          {project.links.map((link) => (
+            <a key={link.url} className={styles.externalLink} href={link.url} target="_blank" rel="noreferrer noopener">
+              {link.label} ↗
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   )
