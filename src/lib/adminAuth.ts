@@ -1,13 +1,14 @@
 // Server-side Admin credential helper — shared by the login route handler
-// (src/app/api/admin/route.ts) and the proxy gate (src/proxy.ts).
+// (src/app/api/admin/route.ts) and the root page's server render switch
+// (src/app/page.tsx).
 //
 // A single secret, ADMIN_PASSWORD, is the entire Admin credential. It is a
 // server-only env var (no NEXT_PUBLIC_ prefix), so it never reaches the browser.
 // The httpOnly `win7.admin` cookie stores a SHA-256 token derived from that
 // secret rather than the plaintext, so the password itself never rides in a
-// cookie, yet both the login route and the proxy can verify the cookie
+// cookie, yet both the login route and the render switch can verify the cookie
 // statelessly by recomputing the same token. Web Crypto is a global in the
-// Node.js runtime (proxy + route handlers), so no import is needed.
+// Node.js runtime (server components + route handlers), so no import is needed.
 
 export const ADMIN_COOKIE_NAME = 'win7.admin'
 
@@ -68,8 +69,8 @@ export async function isAdminPassword(password: string): Promise<boolean> {
 
 /**
  * Whether a presented `win7.admin` cookie value is the valid Admin token —
- * the gate shared by the proxy and the /win7 server render switch. Always
- * false when Admin sign-in is unconfigured.
+ * the gate behind the root page's server render switch. Always false when
+ * Admin sign-in is unconfigured.
  */
 export async function isAdminCookieValid(value: string | undefined): Promise<boolean> {
   const expected = await adminToken()

@@ -12,9 +12,9 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { clearSession, selectAuthStatus, setSession } from '@/store/slices/sessionSlice'
 
 /**
- * The logon screen. Rendered by /win7 when the server sees no valid session
- * cookie. Signing in never navigates — it refreshes the route so the server
- * re-renders the same URL as the desktop.
+ * The logon screen. Rendered at the app root when the server sees no valid
+ * session cookie. Signing in never navigates — it refreshes the route so the
+ * server re-renders the same URL as the desktop.
  */
 export function LoginScreen() {
   const [signingInAs, setSigningInAs] = useState<AccountId | null>(null)

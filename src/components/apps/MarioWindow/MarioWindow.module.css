@@ -1,0 +1,21 @@
+/* Edge-to-edge game canvas (bodySpace=false) — the Godot shell inside the
+   iframe owns its own sizing/letterboxing against a black backdrop.
+
+   This background is what shows during the ~seconds before the iframe document
+   parses, so it is deliberately the same black as the boot overlay's #status
+   in public/mario/index.html — otherwise the handover flashes. Change both. */
+.gameFrame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--color-neutral-900);
+}
+
+.titleBarIcon {
+  width: var(--ie-titlebar-icon-size);
+  height: var(--ie-titlebar-icon-size);
+  object-fit: contain;
+  image-rendering: pixelated;
+  display: block;
+}

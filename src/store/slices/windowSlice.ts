@@ -1,21 +1,22 @@
 import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 import type { RootState } from '@/store'
+import { clearSession } from '@/store/slices/sessionSlice'
 
 // ─── Constants ──────────────────────────────────────────────────────────────────
 
-const DEFAULT_WINDOW_SIZE = { width: 640, height: 440 }
+const DEFAULT_WINDOW_SIZE = { width: 900, height: 950 }
 const DEFAULT_WINDOW_POSITION = { x: 80, y: 80 }
-// Canonical minimum — the --mw-min-* tokens in globals.css are kept in sync
-// by src/lib/designTokens.test.ts.
-export const MIN_WINDOW_SIZE = { width: 240, height: 160 }
+export const MIN_WINDOW_SIZE = { width: 320, height: 200 }
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-// Discriminator for what content renders inside the window. The slice is
-// content-agnostic — a registry component (Task 17) maps kind → React component.
-// Add new kinds here as windows are introduced.
-export type WindowKind = 'internet-explorer' | 'welcome'
+// Discriminator for what content renders inside the window (taskbar grouping,
+// per-kind size/position persistence). The slice is content-agnostic — plain
+// string. Kind values are declared once, in the WindowApp descriptor each app
+// module under components/apps/ exports; registry records reference the
+// descriptor, so kinds are enforced where they are declared, never here.
+export type WindowKind = string
 
 export interface WindowGeometry {
   x: number
@@ -24,9 +25,24 @@ export interface WindowGeometry {
   height: number
 }
 
+// The serializable projection of an open window — just enough to reopen it.
+// Geometry is intentionally omitted: a restored window pulls its size/position
+// from the per-kind maps. Persisted per role by useDesktopPersistence.
+export interface PersistableWindow {
+  kind: WindowKind
+  appKey: string
+  title: string
+  isMinimized: boolean
+  isMaximized: boolean
+}
+
 export interface WindowInstance {
   id: string
   kind: WindowKind
+  // Application registry key (config/applications.ts). Kept as a plain string
+  // so the slice stays content-agnostic — WindowManager resolves it to a
+  // component at render time.
+  appKey: string
   title: string
   position: { x: number; y: number }
   size: { width: number; height: number }
@@ -45,6 +61,17 @@ export interface WindowState {
   ids: string[]
   zCounter: number
   nextIdSeed: number
+  // Last committed size per window kind — a reopened window of that kind
+  // restores it. Hydrated from sessionStorage at desktop boot and written
+  // back on change by useDesktopPersistence.
+  sizeByKind: Partial<Record<WindowKind, { width: number; height: number }>>
+  // Last committed position per window kind — a reopened window of that kind
+  // restores it. Hydrated from sessionStorage at desktop boot and written
+  // back on change by useDesktopPersistence.
+  positionByKind: Partial<Record<WindowKind, { x: number; y: number }>>
+  // Aero Peek: true while the Show Desktop button is hovered — open windows
+  // render as bare glass sheets (WindowWrapper reads this flag).
+  isPeeking: boolean
 }
 
 // ─── Initial State ──────────────────────────────────────────────────────────
@@ -56,6 +83,9 @@ const initialState: WindowState = {
   ids: [],
   zCounter: 0,
   nextIdSeed: 0,
+  sizeByKind: {},
+  positionByKind: {},
+  isPeeking: false,
 }
 
 const windowSlice = createSlice({
@@ -63,11 +93,13 @@ const windowSlice = createSlice({
   initialState,
   reducers: {
     // ── openWindow ────────────────────────────────────────────────────────
-    // Payload: { kind: WindowKind; title: string; position?: {x,y}; size?: {w,h} }
+    // Payload: { kind: WindowKind; appKey: string; title: string;
+    //            position?: {x,y}; size?: {w,h} }
     openWindow(
       state,
       action: PayloadAction<{
         kind: WindowKind
+        appKey: string
         title: string
         position?: { x: number; y: number }
         size?: { width: number; height: number }
@@ -79,10 +111,21 @@ const windowSlice = createSlice({
       //   2. Bump state.zCounter; the new window's zIndex = state.zCounter
       state.zCounter++
       const zIndex = state.zCounter
-      //   3. Default position to { x: 80, y: 80 } if not provided.
-      const position = action.payload.position ?? DEFAULT_WINDOW_POSITION
-      //   4. Default size to { width: 640, height: 440 } if not provided.
-      const size = action.payload.size ?? DEFAULT_WINDOW_SIZE
+      //   3. Position precedence mirrors size: last committed position for
+      //      this kind (restores the user's placement on reopen) → caller-
+      //      provided position → the module default. Copied so byId never
+      //      aliases the positionByKind entry.
+      const position = {
+        ...(state.positionByKind[action.payload.kind] ??
+          action.payload.position ??
+          DEFAULT_WINDOW_POSITION),
+      }
+      //   4. Size precedence: last committed size for this kind (restores the
+      //      user's sizing on reopen) → caller-provided initial size → the
+      //      module default. Copied so byId never aliases the sizeByKind entry.
+      const size = {
+        ...(state.sizeByKind[action.payload.kind] ?? action.payload.size ?? DEFAULT_WINDOW_SIZE),
+      }
       //   5. isMinimized and isMaximized start false; prevGeometry starts null.
       const isMinimized = false
       const isMaximized = false
@@ -91,6 +134,7 @@ const windowSlice = createSlice({
       state.byId[id] = {
         id,
         kind: action.payload.kind,
+        appKey: action.payload.appKey,
         title: action.payload.title,
         position,
         size,
@@ -153,20 +197,21 @@ const windowSlice = createSlice({
       window.isMinimized = true
     },
 
-    // ── restoreWindow ─────────────────────────────────────────────────────
-    // Payload: { id: string }
-    restoreWindow(state, action: PayloadAction<{ id: string }>) {
-      const window = state.byId[action.payload.id]
-      //   1. If window does not exist, return.
-      if (!window) {
-        return
-      }
-      //   2. Set isMinimized = false.
-      window.isMinimized = false
-      //   3. Bump zCounter and assign window.zIndex = state.zCounter
-      //      (restore brings to front — same as focusWindow's promotion).
-      state.zCounter++
-      window.zIndex = state.zCounter
+    // ── minimizeAll ───────────────────────────────────────────────────────
+    // No payload. The Show Desktop button: every open window minimizes; each
+    // window's state (geometry, z-order) survives for restore-on-focus.
+    minimizeAll(state) {
+      state.ids.forEach((id) => {
+        state.byId[id].isMinimized = true
+      })
+    },
+
+    // ── setPeek ───────────────────────────────────────────────────────────
+    // Payload: boolean. Aero Peek — dispatched on Show Desktop button
+    // hover-in/out; open windows keep rendering, WindowWrapper just swaps
+    // them to the glass-sheet treatment while true.
+    setPeek(state, action: PayloadAction<boolean>) {
+      state.isPeeking = action.payload
     },
 
     // ── toggleMaximize ────────────────────────────────────────────────────
@@ -232,6 +277,9 @@ const windowSlice = createSlice({
       //      DO NOT clamp here. Boundary clamping is the responsibility of the
       //      component drag handler (Task 11) which has access to the viewport.
       window.position = { x: action.payload.x, y: action.payload.y }
+      //   4. Remember the committed position for this kind so the next window
+      //      of the same kind reopens at it.
+      state.positionByKind[window.kind] = { ...window.position }
     },
 
     // ── resizeWindow ──────────────────────────────────────────────────────
@@ -252,15 +300,120 @@ const windowSlice = createSlice({
         width: Math.max(action.payload.width, MIN_WINDOW_SIZE.width),
         height: Math.max(action.payload.height, MIN_WINDOW_SIZE.height),
       }
+      //   4. Remember the committed size for this kind so the next window of
+      //      the same kind (and reloads, via persistence) reopens at it.
+      state.sizeByKind[window.kind] = { ...window.size }
     },
+
+    // ── hydrateWindowSizes ────────────────────────────────────────────────
+    // Payload: the persisted per-kind size map. Dispatched once at desktop
+    // boot (useDesktopPersistence) before any window opens.
+    hydrateWindowSizes(
+      state,
+      action: PayloadAction<Partial<Record<WindowKind, { width: number; height: number }>>>
+    ) {
+      state.sizeByKind = action.payload
+    },
+
+    // ── hydrateWindowPositions ────────────────────────────────────────────
+    // Payload: the persisted per-kind position map. Dispatched once at desktop
+    // boot (useDesktopPersistence) before any window opens.
+    hydrateWindowPositions(
+      state,
+      action: PayloadAction<Partial<Record<WindowKind, { x: number; y: number }>>>
+    ) {
+      state.positionByKind = action.payload
+    },
+
+    // ── hydrateOpenWindows ────────────────────────────────────────────────
+    // Payload: the persisted open-window set + the current viewport. Dispatched
+    // once at desktop boot (useDesktopPersistence), AFTER the size/position maps
+    // so each restored window pulls its own per-kind geometry. Reopens each
+    // entry exactly as openWindow would; a maximized entry is rebuilt against the
+    // passed viewport (the reducer has no DOM access of its own). Guarded to a
+    // clean desktop so a StrictMode remount can't double-open the set.
+    hydrateOpenWindows(
+      state,
+      action: PayloadAction<{
+        windows: PersistableWindow[]
+        viewport: { width: number; height: number }
+      }>
+    ) {
+      if (state.ids.length > 0) {
+        return
+      }
+      action.payload.windows.forEach((persisted) => {
+        state.nextIdSeed++
+        const id = `win-${state.nextIdSeed}`
+        state.zCounter++
+        const position = { ...(state.positionByKind[persisted.kind] ?? DEFAULT_WINDOW_POSITION) }
+        const size = { ...(state.sizeByKind[persisted.kind] ?? DEFAULT_WINDOW_SIZE) }
+        const instance: WindowInstance = {
+          id,
+          kind: persisted.kind,
+          appKey: persisted.appKey,
+          title: persisted.title,
+          position,
+          size,
+          zIndex: state.zCounter,
+          isMinimized: persisted.isMinimized,
+          isMaximized: false,
+          prevGeometry: null,
+        }
+        // Maximize stores the pre-maximize geometry so Restore returns there, and
+        // fills the window to the viewport — mirrors toggleMaximize.
+        if (persisted.isMaximized) {
+          instance.prevGeometry = { ...position, width: size.width, height: size.height }
+          instance.position = { x: 0, y: 0 }
+          instance.size = { ...action.payload.viewport }
+          instance.isMaximized = true
+        }
+        state.byId[id] = instance
+        state.ids.push(id)
+      })
+    },
+  },
+
+  extraReducers: (builder) => {
+    // Sign-out clears the live window set AND the remembered per-kind geometry so
+    // the next account starts with a bare desktop; each role's own windows and
+    // geometry are restored from its namespaced sessionStorage markers at desktop
+    // boot (useDesktopPersistence). The open set must reset here too — it lives
+    // only in Redux, which survives the router.refresh() a role switch triggers,
+    // so without this the previous account's windows would linger on-screen.
+    builder.addCase(clearSession, (state) => {
+      state.byId = {}
+      state.ids = []
+      state.zCounter = 0
+      state.nextIdSeed = 0
+      state.sizeByKind = {}
+      state.positionByKind = {}
+      state.isPeeking = false
+    })
   },
 })
 
 // ─── Selectors ──────────────────────────────────────────────────────────────
 
 // Category 1 — primitive field access. No memoization needed.
-export const selectZCounter = (state: RootState): number => {
-  return state.window.zCounter
+export const selectIsPeeking = (state: RootState): boolean => {
+  return state.window.isPeeking
+}
+
+// Category 2 — returns the stored reference; consumed by useDesktopPersistence
+// to change-detect (by identity) and write the map through to sessionStorage.
+export const selectWindowSizes = (
+  state: RootState
+): Partial<Record<WindowKind, { width: number; height: number }>> => {
+  return state.window.sizeByKind
+}
+
+// Category 2 — returns the stored reference; consumed by useDesktopPersistence
+// to change-detect (by identity) and write the map through to sessionStorage.
+export const selectWindowPositions = (
+  state: RootState
+): Partial<Record<WindowKind, { x: number; y: number }>> => {
+  return state.window.positionByKind
 }
 
 // Category 2 — O(1) lookup. Returns a stored reference; no new allocation.
@@ -283,6 +436,23 @@ export const selectOpenWindows = createSelector(
   (byId, ids): WindowInstance[] => {
     return ids.map((id) => byId[id])
   }
+)
+
+// Category 3 — derived array; consumed by useDesktopPersistence to change-detect
+// (by identity) and write the open set through to sessionStorage. Memoized on
+// selectOpenWindows, so it only recomputes when a window is opened/closed or a
+// tracked field changes — not on unrelated dispatches. Shape mirrors
+// PersistedOpenWindow so it round-trips through the marker unchanged.
+export const selectPersistableWindows = createSelector(
+  [selectOpenWindows],
+  (windows): PersistableWindow[] =>
+    windows.map((window) => ({
+      kind: window.kind,
+      appKey: window.appKey,
+      title: window.title,
+      isMinimized: window.isMinimized,
+      isMaximized: window.isMaximized,
+    }))
 )
 
 // Returns: WindowInstance[] of windows where isMinimized === false.
@@ -315,9 +485,13 @@ export const {
   closeWindow,
   focusWindow,
   minimizeWindow,
-  restoreWindow,
+  minimizeAll,
+  setPeek,
   toggleMaximize,
   moveWindow,
   resizeWindow,
+  hydrateWindowSizes,
+  hydrateWindowPositions,
+  hydrateOpenWindows,
 } = windowSlice.actions
 export default windowSlice.reducer

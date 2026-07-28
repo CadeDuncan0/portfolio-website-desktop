@@ -6,9 +6,9 @@ import { setSession, clearSession } from '@/store/slices/sessionSlice'
 
 /**
  * On app boot, rehydrates the session from its client-side markers (guest in
- * sessionStorage; the admin marker that mirrors the httpOnly cookie the proxy
- * gates on). Sign-in and sign-out dispatch their own state changes directly, so
- * this only covers the cold-start / reload case.
+ * sessionStorage; the admin marker that mirrors the httpOnly cookie the server
+ * render switch gates on). Sign-in and sign-out dispatch their own state
+ * changes directly, so this only covers the cold-start / reload case.
  */
 export function useAuthListener(): void {
   const dispatch = useAppDispatch()

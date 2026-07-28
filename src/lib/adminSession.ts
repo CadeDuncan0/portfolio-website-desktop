@@ -5,11 +5,11 @@ import { DEFAULT_USER_ICON } from '@/lib/userIcons'
 /** Client-side marker for the Admin session, mirroring the guest session module.
  *
  *  The authoritative Admin credential is the httpOnly `win7.admin` cookie set by
- *  the server (`/api/admin`) and verified by the proxy. This sessionStorage
- *  marker is only the client's reactive hint, so Redux can rehydrate the role
- *  and avatar after a reload without reading the (unreadable) httpOnly cookie.
- *  Forging it grants nothing — the proxy gate still requires the cookie, so a
- *  tampered marker just bounces off `/win7/desktop` back to the logon screen. */
+ *  the server (`/api/admin`) and verified by the root page's server render
+ *  switch. This sessionStorage marker is only the client's reactive hint, so
+ *  Redux can rehydrate the role and avatar after a reload without reading the
+ *  (unreadable) httpOnly cookie. Forging it grants nothing — the server switch
+ *  still requires the cookie, so a tampered marker still gets the logon screen. */
 
 // Namespaced to prevent collisions with other sessionStorage consumers.
 const ADMIN_SESSION_KEY = 'win7.adminSession'

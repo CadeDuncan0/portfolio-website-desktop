@@ -42,7 +42,7 @@ export function beginGuestSession(avatarSrc: string): AuthResult<AppSession> {
 /**
  * Authenticates the Admin by posting the entered password to `/api/admin`,
  * which compares it to the server-only ADMIN_PASSWORD secret and, on success,
- * sets the httpOnly cookie the proxy gates on. The avatar is the logon-screen
+ * sets the httpOnly cookie the server render switch gates on. The avatar is the logon-screen
  * pick, recorded in the client marker so a reload can restore it.
  */
 export async function signInAsAdmin(

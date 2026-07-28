@@ -31,10 +31,32 @@ export const assetPaths = {
     windowsExplorer: `${ASSETS}/desktop-icons/windows-explorer.ico`,
     folderNested: `${ASSETS}/desktop-icons/folder-nested.ico`,
     folderWithDocuments: `${ASSETS}/desktop-icons/folder-with-documents.ico`,
+    resume: `${ASSETS}/desktop-icons/original-win7-icons/90.ico`,
+    projects: `${ASSETS}/desktop-icons/original-win7-icons/130.ico`,
+    superMarioBros: `${ASSETS}/desktop-icons/super-mario-bros.png`,
+  },
+  /** Portfolio documents served from public/documents. */
+  documents: {
+    resume: '/documents/Cade-Duncan-Resume.pdf',
+  },
+  /** Self-hosted playable game builds (Godot HTML5 exports under public/). */
+  games: {
+    superMarioBros: '/mario/index.html',
+  },
+  /** Project screenshots shown on the IE /projects pages. */
+  projects: {
+    win7WebOs: `${ASSETS}/projects/win7-banner.png`,
+    superMarioBros: `${ASSETS}/projects/mario-banner.png`,
+    stardew: `${ASSETS}/projects/stardew-banner.png`,
   },
   /** Start orb. Mirrored by hand in globals.css `--tb-orb-img`. */
   taskbar: {
     startOrb: `${ASSETS}/desktop-icons/taskbar-startmenu.png`,
+  },
+  /** Authentic Win7 system glyphs (extracted imageres icons). */
+  systemIcons: {
+    info: `${ASSETS}/desktop-icons/original-win7-icons/81.ico`,
+    windowsFlag: `${ASSETS}/desktop-icons/original-win7-icons/24.ico`,
   },
   /** Directory of authentic Win7 user-tile avatars (see lib/userIcons.ts). */
   accountIcons: {
@@ -72,4 +94,15 @@ export function cssAssetVars(): Record<string, string> {
     '--avatar-frame': `url('${BASE_PATH}${assetPaths.accountIcons.border}')`,
     '--tb-orb-img': `url('${BASE_PATH}${assetPaths.taskbar.startOrb}')`,
   }
+}
+
+/**
+ * Prefixes a root-absolute `public/` path with the configured BASE_PATH.
+ * Required for plain <img>/<iframe> srcs, anchor hrefs, and fetch() URLs —
+ * unlike router navigations and next/image, raw element URLs are not
+ * basePath-aware and would resolve against the domain root under a subpath
+ * mount.
+ */
+export function withBasePath(path: string): string {
+  return `${BASE_PATH}${path}`
 }
