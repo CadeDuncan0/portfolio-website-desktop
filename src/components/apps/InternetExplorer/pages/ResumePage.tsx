@@ -28,7 +28,7 @@ export function ResumePage() {
     <div className={styles.resumePage}>
       <div className={styles.bar}>
         <span className={styles.title}>Cade Duncan — Resume</span>
-        <a className={styles.download} href={RESUME_URL} download="Cade-Duncan-Resume.pdf">
+        <a className={styles.download} href={RESUME_URL} download="cade-duncan-resume.pdf">
           Download PDF
         </a>
       </div>
@@ -43,7 +43,7 @@ export function ResumePage() {
             <a className={styles.fallbackButton} href={RESUME_URL} target="_blank" rel="noreferrer">
               Open in new tab
             </a>
-            <a className={styles.fallbackButton} href={RESUME_URL} download="Cade-Duncan-Resume.pdf">
+            <a className={styles.fallbackButton} href={RESUME_URL} download="cade-duncan-resume.pdf">
               Download PDF
             </a>
           </div>
