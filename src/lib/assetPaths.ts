@@ -37,7 +37,7 @@ export const assetPaths = {
   },
   /** Portfolio documents served from public/documents. */
   documents: {
-    resume: '/documents/Cade-Duncan-Resume.pdf',
+    resume: '/documents/cade-duncan-resume.pdf',
   },
   /** Self-hosted playable game builds (Godot HTML5 exports under public/). */
   games: {
